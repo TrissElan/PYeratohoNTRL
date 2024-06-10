@@ -1,0 +1,21 @@
+TITLE,era홍마관NTRL
+VERSION,1.0.0
+SIZE,1300x900
+SIZEX,1300
+SIZEY,900
+RESIZEH,0
+RESIZEW,0
+FONTNAME,굴림체
+FONTSIZE,12
+FONTWEIGHT,normal
+ANOUNCE,era홍마관NTRL
+ANOUNCE,python 및 tkinter를 통해 개발된 2차창작게임이며
+ANOUNCE,erakanon 및 era홍마관NTRproto0.040 및 eratohoTW를 기반으로 제작되었습니다.
+YEAR,년
+MONTH,월
+DAY,일
+HOUR,시
+MIN,분
+START,시작하기
+LOAD,불러오기
+EXIT,종료하기
