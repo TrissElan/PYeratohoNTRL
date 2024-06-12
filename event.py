@@ -19,7 +19,7 @@ class Game:
             SYSTEM.delText(2)
             MM.showMap(SYSTEM.CHARACTERS[self.current].CFLAG[11].ID)
             SYSTEM.setText(0, SYSTEM.timeInfo)
-            IM.showParam(1, SYSTEM.MASTER)
+            IM.showParam(1, self.current)
             SYSTEM.setText(2, "선택된 환녀/방문자/최면좌의 정보 출력")
             IM.showExp(4, self.current)
             SYSTEM.after(0, self.player_action)
@@ -27,7 +27,12 @@ class Game:
             SYSTEM.after(0, self.npc_actions)
     
     def player_action(self):
-        SYSTEM.setText(0, " / 현재위치 : " + SYSTEM.CHARACTERS[self.current].CFLAG[11].NAME)
+        SYSTEM.setText(0, " / 현재위치 : " + SYSTEM.CHARACTERS[self.current].CFLAG[11].NAME + " ")
+        for chara in SYSTEM.CHARACTERS[self.current].CFLAG[11].SPACE:
+            if chara == SYSTEM.CHARACTERS[self.current]:
+                continue
+            SYSTEM.setText(0, "|" + chara.NAME)
+        SYSTEM.setText(0,"|")
         SYSTEM.delButton()
 
         command = {1: "이동하기",2:"밥먹기",3:"잠자기",4:"대기1",5:"대기2",6:"대기3", 7:"대기4"}
@@ -46,7 +51,7 @@ class Game:
 
     def npc_actions(self):
         if self.current < len(SYSTEM.CHARACTERS):
-            command = {1: "이동하기",2:"밥먹기",3:"잠자기"}
+            command = {1: "이동하기",2:"밥먹기",3:"잠자기",4:"대기1",5:"대기2",6:"대기3", 7:"대기4"}
             RESULT = rd.choice(list(command.keys()))
             if RESULT == 1:
                 print(SYSTEM.CHARACTERS[self.current].NAME + " : 이동하기")

@@ -12,6 +12,7 @@ def setFutanari():
 
 def prepareEnv():
     global SYSTEM
+    SYSTEM.delButton()
 
     # 맵준비
     if SYSTEM.MAP == None:
@@ -21,7 +22,7 @@ def prepareEnv():
     if SYSTEM.CHARACTERS == None:
         SYSTEM.CHARACTERS = CaM.prepareCharacters(SYSTEM.VARSIZE)
         # 읽어들인 정보를 토대로 현재위치를 설정함
-        for CHARA in SYSTEM.CHARACTERS.values():
+        for CHARA in SYSTEM.CHARACTERS:
             CHARA.CFLAG[11] = SYSTEM.MAP[CHARA.CFLAG[10]]
             CHARA.CFLAG[11].SPACE.append(CHARA)
 
@@ -29,7 +30,7 @@ def prepareEnv():
     if SYSTEM.CLOTHLIST == None:
         SYSTEM.CLOTHLIST = CoM.prepareClothData()
         # 읽어들인 정보를 토대로 기본복장을 설정함
-        for CHARA in SYSTEM.CHARACTERS.values():
+        for CHARA in SYSTEM.CHARACTERS:
             CoM.setCloth(CHARA, 0, SYSTEM.CLOTHLIST)
     
     # 플레이어 캐릭터 지정
@@ -42,12 +43,13 @@ def prepareEnv():
         3:"준비 완료"
     }
     RESULT = SYSTEM.input(command)
-    command = {
+
+    function = {
         1:lambda:print("커스텀모드!"),
         2:setFutanari,
         3:shop.shop,
     }
-    command[RESULT]()
+    function[RESULT]()
     if RESULT != 3:
         SYSTEM.after(0, prepareEnv)
 

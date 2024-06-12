@@ -58,7 +58,4 @@ def prepareCharacters(VARSIZE):
     cList = []
     for index in range(VARSIZE["CHARA"]):
         cList.append(Character(index, VARSIZE))
-    result = defaultdict(None)
-    for chara in cList:
-        result[chara.ID] = chara
-    return result
+    return cList

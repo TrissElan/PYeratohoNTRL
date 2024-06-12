@@ -37,7 +37,7 @@ def shop():
         6:"옵션설정"
     }
     RESULT = SYSTEM.input(command)
-    command = {
+    function = {
         1:event.simulation,
         2:setWakeupTime,
         3:purchaseItem,
@@ -45,6 +45,6 @@ def shop():
         5:loadData,
         6:lambda:print("테스트5")
     }
-    command[RESULT]()
+    function[RESULT]()
     if RESULT != 1:
         SYSTEM.after(0, shop)

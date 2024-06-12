@@ -15,8 +15,15 @@ def startMenu():
     SYSTEM.setText(4, SYSTEM.SETTING["ANOUNCE"]+"\n\n\n", "center")
     SYSTEM.drawLine(4, "-")
     SYSTEM.setText(4, "\n" * 4)
-    SYSTEM.setButton(lambda:PE.prepareEnv(), SYSTEM.SETTING["START"], align='n')
-    SYSTEM.setButton(lambda:print("테스트2!"), SYSTEM.SETTING["LOAD"], align='n')
+
+    command = {1:SYSTEM.SETTING["START"], 2:SYSTEM.SETTING["LOAD"]}
+
+    RESULT = SYSTEM.input(command, align = "n")
+    if RESULT == 1:
+        PE.prepareEnv()
+    elif RESULT == 2:
+        print("로딩기능!")
+    
     SYSTEM.mainloop()
 
 startMenu()
