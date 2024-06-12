@@ -173,8 +173,8 @@ class System:
             print(f"Error while closing: {e}")
     
     # 입력을 대체하는 메서드
-    def input(self, command:dict|list, positon = "top", align = "w", ):
+    def input(self, command:dict|list, position = "top", align = "w", ):
         for key, msg in command.items():
-            self.setButton(lambda value = key: self.__RESULT.set(value), msg, positon, align)
+            self.setButton(lambda value = key: self.__RESULT.set(value), msg, position, align)
         self.DISPLAY.root.wait_variable(self.__RESULT)
         return self.RESULT
