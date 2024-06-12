@@ -62,7 +62,6 @@ class Game:
 
     def player_action(self):
         SYSTEM.delButton()
-
         command = {1: "이동하기",2:"밥먹기",3:"잠자기",4:"대기1",5:"대기2",6:"대기3", 7:"대기4"}
         if SYSTEM.CHARACTERS[self.current].TARGET != None:
             add_command = {8:"대화하기", 9:"장난치기", 10:"스킨쉽"}
