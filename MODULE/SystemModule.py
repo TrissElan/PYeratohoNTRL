@@ -98,12 +98,12 @@ class System:
             for row in result:
                 self.LV[row[0]] = [int(row[i]) for i in range(1, len(row))]
 
-        self.CHARACTERS = None
-        self.CLOTHLIST = None
-        self.ITEMNAME = None
-        self.MASTER = None
-        self.TARGET = None
-        self.MAP = None
+        self.CHARACTERS:dict = None
+        self.CLOTHLIST:dict = None
+        self.ITEMNAME:dict = None
+        self.MASTER:int = None
+        self.TARGET:int = None
+        self.MAP:dict = None
         self.TIME = 0
         self.FLAG = [0 for i in range(self.VARSIZE["GFLAG"])]
         self.__format = "{}%s {}%s {}%s {}%s {}%s"%(self.SETTING['YEAR'], self.SETTING['MONTH'], self.SETTING['DAY'], self.SETTING['HOUR'], self.SETTING['MIN'])
@@ -111,7 +111,7 @@ class System:
         # 게임 시스템 관리를 위한 기믹 / 변수들
         self.DISPLAY = DM.Display(self.SETTING)
         self.DISPLAY.root.protocol("WM_DELETE_WINDOW", self.on_closing)
-        self.scheduled_tasks = [] 
+        self.scheduled_tasks = []
         self.__RESULT = tk.IntVar()
         self.__RESULT.set(0)
     
@@ -173,7 +173,7 @@ class System:
             print(f"Error while closing: {e}")
     
     # 입력을 대체하는 메서드
-    def input(self, command:dict, positon = "top", align = "w", ):
+    def input(self, command:dict|list, positon = "top", align = "w", ):
         for key, msg in command.items():
             self.setButton(lambda value = key: self.__RESULT.set(value), msg, positon, align)
         self.DISPLAY.root.wait_variable(self.__RESULT)

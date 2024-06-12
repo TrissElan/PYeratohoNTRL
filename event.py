@@ -19,7 +19,7 @@ class Game:
             SYSTEM.delText(2)
             MM.showMap(SYSTEM.CHARACTERS[self.current].CFLAG[11].ID)
             SYSTEM.setText(0, SYSTEM.timeInfo)
-            IM.showParam(1, self.current)
+            IM.showParam(1, SYSTEM.MASTER)
             SYSTEM.setText(2, "선택된 환녀/방문자/최면좌의 정보 출력")
             IM.showExp(4, self.current)
             SYSTEM.after(0, self.player_action)
@@ -27,9 +27,9 @@ class Game:
             SYSTEM.after(0, self.npc_actions)
     
     def player_action(self):
-        SYSTEM.setText(0, " / 현재위치 : " + SYSTEM.CHARACTERS[self.current].CFLAG[11].NAME + " <여기에 현재 위치에 있는 캐릭터 목록 출력 / 선택 가능하게...>")
+        SYSTEM.setText(0, " / 현재위치 : " + SYSTEM.CHARACTERS[self.current].CFLAG[11].NAME)
         SYSTEM.delButton()
-        command = {1: "이동하기",2:"밥먹기",3:"잠자기"}
+        command = {1: "이동하기",2:"밥먹기",3:"잠자기",4:"대기1",5:"대기2",6:"대기3"}
         
         RESULT = SYSTEM.input(command)
         if RESULT == 1:                                                                           

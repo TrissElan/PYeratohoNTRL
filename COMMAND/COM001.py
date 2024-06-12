@@ -18,5 +18,3 @@ def COM001(chara:int):
     SYSTEM.MAP[RESULT].SPACE.append(player)
     player.CFLAG[11] = SYSTEM.MAP[RESULT]
     print(player.NAME + " : " + player.CFLAG[11].NAME + "으로 이동함")
-
-    

@@ -51,9 +51,6 @@ class Character:
         # 현재 선택된 행동이 무엇인지 확인하는 변수
         self._currentAction = None
 
-        # 수행가능한 명령리스트
-        self.__command = {"001":"이동하기"}
-    
     def __str__(self):
         return self.NAME
     
@@ -61,7 +58,7 @@ def prepareCharacters(VARSIZE):
     cList = []
     for index in range(VARSIZE["CHARA"]):
         cList.append(Character(index, VARSIZE))
-    result = {}
+    result = defaultdict(None)
     for chara in cList:
         result[chara.ID] = chara
     return result

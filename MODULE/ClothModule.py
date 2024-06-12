@@ -1,9 +1,10 @@
 import json
+from collections import defaultdict
 
 def prepareClothData():
     with open("DATA/CLOTHLIST.json", "r", encoding="utf-8") as jsonFile:
         data = json.load(jsonFile)
-    clothList = {}
+    clothList = defaultdict(None)
     for cloth in data:
         clothList[cloth["category"] * 100 + cloth["id"]] = cloth
     return clothList
