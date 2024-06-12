@@ -60,17 +60,17 @@ def EXPLV(exp, index)->str:
     else:
         return "Lv.00"
 
-def showParam(area, index):
+def showParam(area, chara):
     result = ""
-    SYSTEM.setText(area, f"{SYSTEM.CHARACTERS[index].NAME}({SYSTEM.CHARACTERS[index].ANAME}) <여기에 복장이나 장착아이템등 추가 출력>\n")
-    SYSTEM.setText(area, f"HP:[{SYSTEM.CHARACTERS[index].BASE[0]} / {SYSTEM.CHARACTERS[index].MAXBASE[0]}] ")
-    SYSTEM.setText(area, f"HP:[{SYSTEM.CHARACTERS[index].BASE[0]} / {SYSTEM.CHARACTERS[index].MAXBASE[0]}] ")
-    SYSTEM.setText(area, f"SAN:[{SYSTEM.CHARACTERS[index].BASE[1]} / {SYSTEM.CHARACTERS[index].MAXBASE[1]}] ")
-    SYSTEM.setText(area, f"FAT:[{SYSTEM.CHARACTERS[index].BASE[2]} / {SYSTEM.CHARACTERS[index].MAXBASE[2]}]\n")
+    SYSTEM.setText(area, f"{chara.NAME}({chara.ANAME}) <여기에 복장이나 장착아이템등 추가 출력>\n")
+    SYSTEM.setText(area, f"HP:[{chara.BASE[0]} / {chara.MAXBASE[0]}] ")
+    SYSTEM.setText(area, f"HP:[{chara.BASE[0]} / {chara.MAXBASE[0]}] ")
+    SYSTEM.setText(area, f"SAN:[{chara.BASE[1]} / {chara.MAXBASE[1]}] ")
+    SYSTEM.setText(area, f"FAT:[{chara.BASE[2]} / {chara.MAXBASE[2]}]\n")
     SYSTEM.drawLine(area, "-")
     count = 0
     for key, name in SYSTEM.PARAMNAME.items():
-        result += f"{name}:{PARAMLV(SYSTEM.CHARACTERS[index].PARAM, key)}"
+        result += f"{name}:{PARAMLV(chara.PARAM, key)}"
         count += 1
         if count == 6:
             count = 0
@@ -81,12 +81,12 @@ def showParam(area, index):
         result = result[:-1]
     SYSTEM.setText(area, result)
 
-def showExp(area, index):
+def showExp(area, chara):
     global SYSTEM
     result = ""
     count = 0
     for key, name in SYSTEM.EXPNAME.items():
-        result += f"{name} : {EXPLV(SYSTEM.CHARACTERS[index].EXP, key)}"
+        result += f"{name} : {EXPLV(chara.EXP, key)}"
         count += 1
         if count == 5:
             count = 0

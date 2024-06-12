@@ -51,6 +51,9 @@ class Character:
         # 현재 선택된 행동이 무엇인지 확인하는 변수
         self._currentAction = None
 
+        # 캐릭터가 선택한 대상을 기록하는 변수
+        self.TARGET:int|None = None
+
     def __str__(self):
         return self.NAME
     

@@ -102,7 +102,6 @@ class System:
         self.CLOTHLIST:dict = None
         self.ITEMNAME:dict = None
         self.MASTER:int = None
-        self.TARGET:int = None
         self.MAP:dict = None
         self.TIME = 0
         self.FLAG = [0 for i in range(self.VARSIZE["GFLAG"])]
