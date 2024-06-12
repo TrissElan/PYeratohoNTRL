@@ -29,7 +29,8 @@ class Game:
     def player_action(self):
         SYSTEM.setText(0, " / 현재위치 : " + SYSTEM.CHARACTERS[self.current].CFLAG[11].NAME)
         SYSTEM.delButton()
-        command = {1: "이동하기",2:"밥먹기",3:"잠자기",4:"대기1",5:"대기2",6:"대기3"}
+
+        command = {1: "이동하기",2:"밥먹기",3:"잠자기",4:"대기1",5:"대기2",6:"대기3", 7:"대기4"}
         
         RESULT = SYSTEM.input(command)
         if RESULT == 1:                                                                           
