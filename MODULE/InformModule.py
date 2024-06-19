@@ -61,38 +61,11 @@ def EXPLV(exp, index)->str:
         return "Lv.00"
 
 def showParam(area, chara):
-    result = ""
-    SYSTEM.setText(area, f"{chara.NAME}({chara.ANAME}) <여기에 복장이나 장착아이템등 추가 출력>\n")
-    SYSTEM.setText(area, f"HP:[{chara.BASE[0]} / {chara.MAXBASE[0]}] ")
-    SYSTEM.setText(area, f"HP:[{chara.BASE[0]} / {chara.MAXBASE[0]}] ")
-    SYSTEM.setText(area, f"SAN:[{chara.BASE[1]} / {chara.MAXBASE[1]}] ")
-    SYSTEM.setText(area, f"FAT:[{chara.BASE[2]} / {chara.MAXBASE[2]}]\n")
-    SYSTEM.drawLine(area, "-")
-    count = 0
-    for key, name in SYSTEM.PARAMNAME.items():
-        result += f"{name}:{PARAMLV(chara.PARAM, key)}"
-        count += 1
-        if count == 6:
-            count = 0
-            result += "\n"
-        else:
-            result += " | "
-    if result[-1] == "\n":
-        result = result[:-1]
-    SYSTEM.setText(area, result)
+    global SYSTEM
+    # 내용물 재구성해야 함
+    # SYSTEM.setText(area, result)
 
 def showExp(area, chara):
     global SYSTEM
-    result = ""
-    count = 0
-    for key, name in SYSTEM.EXPNAME.items():
-        result += f"{name} : {EXPLV(chara.EXP, key)}"
-        count += 1
-        if count == 5:
-            count = 0
-            result += "\n"
-        else:
-            result += " | "
-    if result[-1] == "\n":
-        result = result[:-1]
-    SYSTEM.setText(area, result)
+    # 내용물 재구성해야 함
+    # SYSTEM.setText(area, result)

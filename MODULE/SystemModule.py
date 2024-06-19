@@ -1,8 +1,11 @@
 from csv import reader as read
+from json import load
 import MODULE.DisplayModule as DM
+import MODULE.CharacterModule as CM
 import tkinter as tk
 import tkinter.font as font
 import typing
+import random as rd
 
 def on_enter(e, tag=None):
     if tag == None:
@@ -35,6 +38,7 @@ class System:
         with open("./DATA/VARSIZE.csv", "r", encoding="utf-8") as csvFile:
             result = read(csvFile)
             self.VARSIZE = {row[0]:int(row[1]) for row in result if row != []}
+
         with open("./DATA/SETTING.csv", "r", encoding="utf-8") as csvFile:
             result = read(csvFile)
             self.SETTING = {}
@@ -43,7 +47,8 @@ class System:
                     self.SETTING[row[0]] = row[1]
                 else:
                     self.SETTING[row[0]] += "\n" + row[1]
-        
+            self.SETTING["ANOUNCE"] += "\n"
+
         with open("./DATA/TALENT.csv", "r", encoding="utf-8") as csvFile:
             result = read(csvFile)
             self.TALENTNAME = {}
@@ -52,6 +57,7 @@ class System:
                     continue
                 else:
                     self.TALENTNAME[int(row[0])] = row[1]
+
         with open("./DATA/ABL.csv", "r", encoding="utf-8") as csvFile:
             result = read(csvFile)
             self.ABLNAME = {}
@@ -60,14 +66,23 @@ class System:
                     continue
                 else:
                     self.ABLNAME[int(row[0])] = row[1]
+
         with open("./DATA/EXP.csv", "r", encoding="utf-8") as csvFile:
             result = read(csvFile)
-            self.EXPNAME = {}
+            self.__EXPNAME1 = []
+            self.__EXPNAME2 = {}
             for row in result:
                 if row == [] or row[0] == "" or row[0].startswith(";"):
                     continue
                 else:
-                    self.EXPNAME[int(row[0])] = row[1]
+                    self.__EXPNAME1.append(row[3])
+                    if row[4] == "None":
+                        self.__EXPNAME2[row[3]] = None
+                    else:
+                        self.__EXPNAME2[row[3]] = []
+                        for i in range(4, len(row)):
+                            self.__EXPNAME2[row[3]].append(row[i])
+
         with open("./DATA/EQUIP.csv", "r", encoding="utf-8") as csvFile:
             result = read(csvFile)
             self.EQUIPNAME = {}
@@ -76,6 +91,7 @@ class System:
                     continue
                 else:
                     self.EQUIPNAME[int(row[0])] = row[1]
+
         with open("./DATA/BASE.csv", "r", encoding="utf-8") as csvFile:
             result = read(csvFile)
             self.BASENAME = {}
@@ -84,6 +100,7 @@ class System:
                     continue
                 else:
                     self.BASENAME[int(row[0])] = row[1]
+
         with open("./DATA/PARAM.csv", "r", encoding="utf-8") as csvFile:
             result = read(csvFile)
             self.PARAMNAME = {}
@@ -92,13 +109,14 @@ class System:
                     continue
                 else:
                     self.PARAMNAME[int(row[0])] = row[1]
+
         with open("./DATA/LV.csv", "r", encoding="utf-8") as csvFile:
             result = read(csvFile)
             self.LV = {}
             for row in result:
                 self.LV[row[0]] = [int(row[i]) for i in range(1, len(row))]
 
-        self.CHARACTERS:dict = None
+        self.CHARACTERS:list = None
         self.CLOTHLIST:dict = None
         self.ITEMNAME:dict = None
         self.MASTER:int = None
@@ -123,6 +141,13 @@ class System:
     @RESULT.setter
     def RESULT(self, intValue:int):
         self.__RESULT.set(intValue)
+
+    # EXPNAME을 조합하여 반환하는 함수 - 첫번째 매개변수는 카테고리, 두번째 매개변수는 부위
+    def EXPNAME(self, index1:int, index2:int):
+        if self.__EXPNAME2[self.__EXPNAME1[index1]] == None:
+            return self.__EXPNAME1[index1]
+        else:
+            return f"{self.__EXPNAME1[index1]}({self.__EXPNAME2[self.__EXPNAME1[index1]][index2]})"
     
     # 버튼 관리 및 텍스트 관리 메서드
     def setButton(self, func, msg, position = 'top', align = 'w', xyfill = 'y'):
@@ -150,6 +175,10 @@ class System:
     def update(self):
         self.DISPLAY.root.update()
     
+    # 출력된 텍스트의 가장 최신으로 자동으로 스크롤
+    def see_end(self):
+        self.DISPLAY.textArea[4].see("end")
+    
     # 이벤트함수 예약메서드
     def after(self, ms:int, func):
         task_id = self.DISPLAY.root.after(ms, func)
@@ -165,15 +194,27 @@ class System:
     def on_closing(self):
         try:
             self.cancel_all_tasks()  # 추가: 모든 예약된 작업 취소
-            self.RESULT = 0
+            self.RESULT = 9999
             self.DISPLAY.root.quit()  # 이벤트 루프 중단
             self.DISPLAY.root.destroy()  # 창 닫기
         except Exception as e:
             print(f"Error while closing: {e}")
     
+    # 임의난수 생성함수
+    def random(self, *args):
+        if len(args) == 1:
+            return rd.randrange(0, args[0])
+        elif len(args) == 2:
+            return rd.randrange(args[0], args[1])
+        else:
+            return 0
+    
     # 입력을 대체하는 메서드
-    def input(self, command:dict|list, position = "top", align = "w", ):
-        for key, msg in command.items():
-            self.setButton(lambda value = key: self.__RESULT.set(value), msg, position, align)
-        self.DISPLAY.root.wait_variable(self.__RESULT)
+    def input(self, command:dict, isRandom = False, position = "top", align = "w"):
+        if isRandom:
+            self.RESULT = self.random(len(command))
+        else:
+            for key, msg in command.items():
+                self.setButton(lambda value = key: self.__RESULT.set(value), msg, position, align)
+            self.DISPLAY.root.wait_variable(self.__RESULT)
         return self.RESULT

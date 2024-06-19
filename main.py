@@ -7,23 +7,30 @@ import prepareEnv as PE
 
 SYSTEM = SM.System()
 
-def startMenu():
-    global SYSTEM
-    SYSTEM.setText(4, "\n" * 4)
-    SYSTEM.drawLine(4, "-")
-    SYSTEM.setText(4, "\n" * 4)
-    SYSTEM.setText(4, SYSTEM.SETTING["ANOUNCE"]+"\n\n\n", "center")
-    SYSTEM.drawLine(4, "-")
-    SYSTEM.setText(4, "\n" * 4)
+class StartMenu:
+    def __init__(self):
+        global SYSTEM
+        self.menu()
+        SYSTEM.mainloop()
 
-    command = {1:SYSTEM.SETTING["START"], 2:SYSTEM.SETTING["LOAD"]}
+    def menu(self):
+        global SYSTEM
+        SYSTEM.delText(4)
+        SYSTEM.delButton()
+        
+        SYSTEM.setText(4, "\n" * 5)
+        SYSTEM.drawLine(4, "-")
+        SYSTEM.setText(4, "\n" * 4 + SYSTEM.SETTING["ANOUNCE"] + "\n" * 4, "center")
+        SYSTEM.drawLine(4, "-")
 
-    RESULT = SYSTEM.input(command, align = "n")
-    if RESULT == 1:
-        PE.prepareEnv()
-    elif RESULT == 2:
-        print("로딩기능!")
+        self.action()
     
-    SYSTEM.mainloop()
-
-startMenu()
+    def action(self):
+        command = {1:SYSTEM.SETTING["START"], 2:SYSTEM.SETTING["LOAD"]}
+        RESULT = SYSTEM.input(command, align = "n")
+        if RESULT == 1:
+            SYSTEM.after(0,PE.prepareEnv)
+        elif RESULT == 2:
+            SYSTEM.after(0,self.menu)
+  
+game = StartMenu()

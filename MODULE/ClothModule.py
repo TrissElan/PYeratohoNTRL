@@ -22,12 +22,12 @@ class Cloth:
     def __init__(self, chara, **clothList):
         self.OWNER = chara
         self.STAIN = "깨끗한"
-        self.SMELL = f"{chara.NAME} + 의 체취"
+        self.SMELL = f"{chara.NAME()} + 의 체취"
         self.__MOVABLE =  clothList["shiftable"]            # 젓힐 수 있는지 여부
         self.STATUS = False                               # 상태 / True이면 젓힌 상태
         self.CATEGORY = clothList["category"]             # 부위 인식용 카테고리번호
         self.ID = clothList["id"]                         # 카테고리별 복장 인식용 번호
-        self.NAME = f"{chara.NAME}의 {clothList['name']}" # 복장의 명칭
+        self.NAME = f"{chara.NAME()}의 {clothList['name']}" # 복장의 명칭
 
     def shift(self)->bool:
         if not self.__MOVABLE:
