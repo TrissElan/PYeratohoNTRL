@@ -1,34 +1,29 @@
 import MODULE.SystemModule as SM
 import random as rd
+import MODULE.CharacterModule as CM
 
 SYSTEM = SM.System()
 
-def COM001(chara:int):
+def COM000(chara:CM.Character):
     global SYSTEM
-    player = SYSTEM.CHARACTERS[chara]
     locations = {}
-    for location in player.CFLAG[11].LINK:
+    for location in chara.CFLAG[11].LINK:
         locations[location.ID] = location.NAME
-    if chara == SYSTEM.MASTER:
+    if chara == SYSTEM.CHARACTERS[SYSTEM.MASTER]:
         RESULT = SYSTEM.input(locations)
     else:
         RESULT = rd.choice(list(locations.keys()))
-    player.CFLAG[11].SPACE.remove(player)
-    player.CFLAG[12] = player.CFLAG[11]
-    SYSTEM.MAP[RESULT].SPACE.append(player)
-    player.CFLAG[11] = SYSTEM.MAP[RESULT]
-    print(player.NAME + " : " + player.CFLAG[11].NAME + "으로 이동함")
+    chara.CFLAG[11].SPACE.remove(chara)
+    chara.CFLAG[12] = chara.CFLAG[11]
+    SYSTEM.MAP[RESULT].SPACE.append(chara)
+    chara.CFLAG[11] = SYSTEM.MAP[RESULT]
 
-def COM002(chara:int):
+def COM007(chara:CM.Character):
     global SYSTEM
-    SYSTEM.delText(4)
-    player = SYSTEM.CHARACTERS[chara]
-    SYSTEM.setText(4, f"{player}은 {player.TARGET}과 가벼운 대화를 시작했다.\n")
-    if player.TARGET.CFLAG[20][player] <= 100:
+    SYSTEM.setText(4, f"{chara.NAME("은는")} {chara.TARGET.NAME("와과")} 가벼운 대화를 시작했다.\n")
+    if chara.TARGET.CFLAG[20][chara] <= 100:
         SYSTEM.setText(4, "별 관심이 없어 보인다...\n")
-    elif player.TARGET.CFLAG[20][player] <= 200:
+    elif chara.TARGET.CFLAG[20][chara] <= 200:
         SYSTEM.setText(4, "가끔씩 미소를 짓는데 너무나 눈부시다...\n")
-    player.EXP[96] += 1
-    player.TARGET.EXP[96] += 1
-
-    SYSTEM.DISPLAY.textArea[4].bind("<Button-1>", lambda e: SYSTEM.delText(4))
+    chara.EXP[96] += 1
+    chara.TARGET.EXP[96] += 1

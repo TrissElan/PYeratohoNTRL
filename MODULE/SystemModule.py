@@ -3,6 +3,7 @@ import MODULE.DisplayModule as DM
 import tkinter as tk
 import tkinter.font as font
 import typing
+import random as rd
 
 def on_enter(e, tag=None):
     if tag == None:
@@ -150,6 +151,10 @@ class System:
     def update(self):
         self.DISPLAY.root.update()
     
+    # 출력된 텍스트의 가장 최신으로 자동으로 스크롤
+    def see_end(self):
+        self.DISPLAY.textArea[4].see("end")
+    
     # 이벤트함수 예약메서드
     def after(self, ms:int, func):
         task_id = self.DISPLAY.root.after(ms, func)
@@ -165,15 +170,27 @@ class System:
     def on_closing(self):
         try:
             self.cancel_all_tasks()  # 추가: 모든 예약된 작업 취소
-            self.RESULT = 0
+            self.RESULT = 9999
             self.DISPLAY.root.quit()  # 이벤트 루프 중단
             self.DISPLAY.root.destroy()  # 창 닫기
         except Exception as e:
             print(f"Error while closing: {e}")
     
+    # 임의난수 생성함수
+    def random(self, *args):
+        if len(args) == 1:
+            return rd.randrange(0, args[0])
+        elif len(args) == 2:
+            return rd.randrange(args[0], args[1])
+        else:
+            return 0
+    
     # 입력을 대체하는 메서드
-    def input(self, command:dict|list, position = "top", align = "w", ):
-        for key, msg in command.items():
-            self.setButton(lambda value = key: self.__RESULT.set(value), msg, position, align)
-        self.DISPLAY.root.wait_variable(self.__RESULT)
+    def input(self, command:dict, isRandom = False, position = "top", align = "w"):
+        if isRandom:
+            self.RESULT = self.random(len(command))
+        else:
+            for key, msg in command.items():
+                self.setButton(lambda value = key: self.__RESULT.set(value), msg, position, align)
+            self.DISPLAY.root.wait_variable(self.__RESULT)
         return self.RESULT

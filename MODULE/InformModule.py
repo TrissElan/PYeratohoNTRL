@@ -62,7 +62,7 @@ def EXPLV(exp, index)->str:
 
 def showParam(area, chara):
     result = ""
-    SYSTEM.setText(area, f"{chara.NAME}({chara.ANAME}) <여기에 복장이나 장착아이템등 추가 출력>\n")
+    SYSTEM.setText(area, f"{chara.NAME()}({chara.ANAME()}) <여기에 복장이나 장착아이템등 추가 출력>\n")
     SYSTEM.setText(area, f"HP:[{chara.BASE[0]} / {chara.MAXBASE[0]}] ")
     SYSTEM.setText(area, f"HP:[{chara.BASE[0]} / {chara.MAXBASE[0]}] ")
     SYSTEM.setText(area, f"SAN:[{chara.BASE[1]} / {chara.MAXBASE[1]}] ")

@@ -17,8 +17,8 @@ class Character:
         
         # JSON파일에 들어있어야 하는 파트
         self.ID = result["ID"]
-        self.NAME = result["NAME"]
-        self.ANAME = result["ANAME"]
+        self.__NAME = result["NAME"]
+        self.__ANAME = result["ANAME"]
         self.MAXBASE = getList(-3, VARSIZE["BASE"], result["BASE"])
         self.BASE = getList(-3, VARSIZE["BASE"])
         self.TALENT = getList(-3, VARSIZE["TALENT"], result["TALENT"])
@@ -53,9 +53,76 @@ class Character:
 
         # 캐릭터가 선택한 대상을 기록하는 변수
         self.TARGET:int|None = None
-
-    def __str__(self):
-        return self.NAME
+    
+    def NAME(self, josa:str|None = None):
+        if josa == None:
+            return self.__NAME
+        else:
+            base_code, jungsung = 0xAC00, 28
+            last_char = self.__NAME[-1]
+            # 한글 유니코드 범위: 0xAC00 ~ 0xD7A3
+            if base_code <= ord(last_char) <= 0xD7A3:
+                char_code = ord(last_char) - base_code
+                jongseong = char_code % jungsung
+                if jongseong == 0:
+                    # 받침이 없는 경우
+                    if josa == '은는':
+                        return self.__NAME + '는'
+                    elif josa == '이가':
+                        return self.__NAME + '가'
+                    elif josa == '와과':
+                        return self.__NAME + '와'
+                else:
+                    # 받침이 있는 경우
+                    if josa == '은는':
+                        return self.__NAME + '은'
+                    elif josa == '이가':
+                        return self.__NAME + '이'
+                    elif josa == '와과':
+                        return self.__NAME + '과'
+            else:
+                # 한글이 아닌 경우, 받침이 없다고 간주
+                if josa == '은는':
+                    return self.__NAME + '는'
+                elif josa == '이가':
+                    return self.__NAME + '가'
+                elif josa == '와과':
+                    return self.__NAME + '와'
+    
+    def ANAME(self, josa:str|None = None):
+        if josa == None:
+            return self.__ANAME
+        else:
+            base_code, jungsung = 0xAC00, 28
+            last_char = self.__ANAME[-1]
+            # 한글 유니코드 범위: 0xAC00 ~ 0xD7A3
+            if base_code <= ord(last_char) <= 0xD7A3:
+                char_code = ord(last_char) - base_code
+                jongseong = char_code % jungsung
+                if jongseong == 0:
+                    # 받침이 없는 경우
+                    if josa == '은는':
+                        return self.__NAME + '는'
+                    elif josa == '이가':
+                        return self.__NAME + '가'
+                    elif josa == '와과':
+                        return self.__NAME + '와'
+                else:
+                    # 받침이 있는 경우
+                    if josa == '은는':
+                        return self.__NAME + '은'
+                    elif josa == '이가':
+                        return self.__NAME + '이'
+                    elif josa == '와과':
+                        return self.__NAME + '과'
+            else:
+                # 한글이 아닌 경우, 받침이 없다고 간주
+                if josa == '은는':
+                    return self.__NAME + '는'
+                elif josa == '이가':
+                    return self.__NAME + '가'
+                elif josa == '와과':
+                    return self.__NAME + '와'
     
 def prepareCharacters(VARSIZE):
     cList = []

@@ -46,5 +46,8 @@ def shop():
         6:lambda:print("테스트5")
     }
     function[RESULT]()
+    if RESULT == 1:
+        SYSTEM.delText(4)
+        SYSTEM.DISPLAY.textArea[4].bind("<Button-3>", lambda e: SYSTEM.delText(4))
     if RESULT != 1:
         SYSTEM.after(0, shop)
