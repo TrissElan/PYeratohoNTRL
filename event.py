@@ -10,6 +10,7 @@ class Game:
     def __init__(self):
         global SYSTEM
         self.current = 0
+        SYSTEM.GFLAG[0] = 3
         SYSTEM.after(0, self.game_loop)  # 초기 게임 루프 시작
     
     def select_target(self, target):

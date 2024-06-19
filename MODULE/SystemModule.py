@@ -122,11 +122,15 @@ class System:
         self.MASTER:int = None
         self.MAP:dict = None
         self.TIME = 0
-        self.FLAG = [0 for i in range(self.VARSIZE["GFLAG"])]
+        self.GFLAG = [0 for i in range(self.VARSIZE["GFLAG"])]
         self.__format = "{}%s {}%s {}%s {}%s {}%s"%(self.SETTING['YEAR'], self.SETTING['MONTH'], self.SETTING['DAY'], self.SETTING['HOUR'], self.SETTING['MIN'])
 
         # 게임 시스템 관리를 위한 기믹 / 변수들
         self.DISPLAY = DM.Display(self.SETTING)
+
+        # 구상출력영역은 실제 게임에 접속한 이후부터 우클릭을 통한 출력내용 제거가 가능함 / 그 외에는 불가능함
+        self.DISPLAY.textArea[4].bind("<Button-3>", lambda e: self.delText(4) if self.GFLAG[0] == 3 else None)
+
         self.DISPLAY.root.protocol("WM_DELETE_WINDOW", self.on_closing)
         self.scheduled_tasks = []
         self.__RESULT = tk.IntVar()
@@ -155,15 +159,21 @@ class System:
         button.pack(side=position, fill=xyfill, anchor = align, padx = 1, pady = 0)
         button.bind("<Enter>", on_enter)
         button.bind("<Leave>", on_leave)
+
     def delButton(self):
         for instance in self.DISPLAY.bArea.winfo_children():
             instance.destroy()
+        
+    # 텍스트와 관련된 메서드
+
     def drawLine(self, index, shape):
         fontWidth = font.nametofont(self.DISPLAY.textArea[index].cget("font")).measure("-")
         windowWidth = self.DISPLAY.textArea[index].winfo_width()
         self.setText(index, shape * (windowWidth // fontWidth - 1) + "\n")
+
     def setText(self, index, msg, align='left'):
         self.DISPLAY.textArea[index].insert("end", msg, align)
+
     def delText(self, index):
         self.DISPLAY.textArea[index].delete("1.0", tk.END)
 
