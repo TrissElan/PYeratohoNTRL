@@ -17,6 +17,7 @@ def COM000(CHARA:CM.Character):
     CHARA.CFLAG[12] = CHARA.CFLAG[11]
     SYSTEM.MAP[RESULT].SPACE.append(CHARA)
     CHARA.CFLAG[11] = SYSTEM.MAP[RESULT]
+    # 나중게 경로에 따라 작동하도록 만들어야 할텐데...
 
 def COM007(CHARA:CM.Character):
     global SYSTEM
