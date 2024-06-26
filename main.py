@@ -10,27 +10,35 @@ SYSTEM = SM.System()
 class StartMenu:
     def __init__(self):
         global SYSTEM
-        self.menu()
+        self.phase0()
         SYSTEM.mainloop()
-
-    def menu(self):
-        global SYSTEM
+    
+    def phase0(self):
         SYSTEM.delText(4)
-        SYSTEM.delButton()
-        
+        SYSTEM.delText(5)
+        self.phase1()
+
+    def phase1(self):
+        global SYSTEM
         SYSTEM.setText(4, "\n" * 5)
         SYSTEM.drawLine(4, "-")
         SYSTEM.setText(4, "\n" * 4 + SYSTEM.SETTING["ANOUNCE"] + "\n" * 4, "center")
         SYSTEM.drawLine(4, "-")
-
-        self.action()
+        self.phase2()
     
-    def action(self):
-        command = {1:SYSTEM.SETTING["START"], 2:SYSTEM.SETTING["LOAD"]}
-        RESULT = SYSTEM.input(command, align = "n")
+    def phase2(self):
+        commands = {1:SYSTEM.SETTING["START"], 2:SYSTEM.SETTING["LOAD"]}
+        SYSTEM.input(commands, 8, 1)
+        self.phase3()
+    
+    def phase3(self):
+        RESULT = SYSTEM.RESULT
         if RESULT == 1:
-            SYSTEM.after(0,PE.prepareEnv)
+            SYSTEM.after(PE.preprare)
         elif RESULT == 2:
-            SYSTEM.after(0,self.menu)
-  
-game = StartMenu()
+            self.phase1()
+
+def startGame():
+    game = StartMenu()
+
+startGame()

@@ -4,13 +4,14 @@ import MODULE.CharacterModule as CM
 
 SYSTEM = SM.System()
 
-def COM000(CHARA:CM.Character):
+def COM001(CHARA:CM.Character):
     global SYSTEM
     locations = {}
     for location in CHARA.CFLAG[11].LINK:
         locations[location.ID] = location.NAME
     if CHARA == SYSTEM.CHARACTERS[SYSTEM.MASTER]:
-        RESULT = SYSTEM.input(locations)
+        SYSTEM.input(locations, 10, 5)
+        RESULT = SYSTEM.RESULT
     else:
         RESULT = rd.choice(list(locations.keys()))
     CHARA.CFLAG[11].SPACE.remove(CHARA)
@@ -19,13 +20,11 @@ def COM000(CHARA:CM.Character):
     CHARA.CFLAG[11] = SYSTEM.MAP[RESULT]
     # 나중게 경로에 따라 작동하도록 만들어야 할텐데...
 
-def COM007(CHARA:CM.Character):
+def COM006(CHARA:CM.Character):
     global SYSTEM
     TARGET = CHARA.TARGET
     
     # EXP 증가
-    CHARA.EXP[9][1] += 1
-    TARGET.EXP[9][1] += 1
 
     # PARAM 증가
 

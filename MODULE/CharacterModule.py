@@ -20,15 +20,13 @@ class Character:
         self.ID = result["ID"]
         self.__NAME = result["NAME"]
         self.__ANAME = result["ANAME"]
-        self.MAXBASE = getList(-3, VARSIZE["BASE"], result["BASE"])
-        self.BASE = getList(-3, VARSIZE["BASE"])
         self.TALENT = getList(-3, VARSIZE["TALENT"], result["TALENT"])
         self.BODY = getList(-3, VARSIZE["BODY"], result["BODY"])
         self.CFLAG = getList(0, VARSIZE["CFLAG"], result["FLAG"])
         self.ABL = getList(0, VARSIZE["ABL"], source = result["ABL"] if "ABL" in result else None)
-        self.PARAM = getList(0, VARSIZE["PARAM"])
         
-        # 경험치 기록을 위한 구조 생성
+        
+        # 경험치 기록을 위한 DB 생성
         self.EXP = getList(None, VARSIZE["EXP"])
         with open("DATA/EXP.csv", "r", encoding="utf-8") as csvFile:
             result = read(csvFile)
@@ -41,6 +39,18 @@ class Character:
                     else:
                         self.EXP[int(row[0])] = [0 for i in range(int(row[2]))]
 
+        # 파라미터 기록을 위한 DB 생성
+        self.PARAM = getList(None, VARSIZE["PARAM"])
+        with open("DATA/PARAM.csv", "r", encoding="utf-8") as csvFile:
+            result = read(csvFile)
+            for row in result:
+                if row == [] or row[0] == "" or row[0].startswith(";"):
+                    continue
+                else:
+                    if row[1] != "0":
+                        self.PARAM[int(row[0])] = [[0 for i in range(int(row[2]))] for i in range(int(row[1]))]
+                    else:
+                        self.PARAM[int(row[0])] = [0 for i in range(int(row[2]))]
         
         # JSON파일에 들어있으며 안되는 파트
         self.ITEM = getList(None, VARSIZE["ITEM"])

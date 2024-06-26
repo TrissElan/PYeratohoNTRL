@@ -23,12 +23,12 @@ def saveData():
     SYSTEM = SM.System()
     print("세이브 인터페이스!")
 
-def shop():
+def startShop():
     global SYSTEM
-    for i in range(5): SYSTEM.delText(i)
-    SYSTEM.delButton()
+    for i in range(6):
+        SYSTEM.delText(i)
     SYSTEM.setText(4, "오늘도 힘쎄고 강한 아침이다!")
-    command = {
+    commands = {
         1:"기상하기",
         2:"기상시간 설정",
         3:"도구구매",
@@ -36,8 +36,8 @@ def shop():
         5:"불러오기",
         6:"옵션설정"
     }
-    RESULT = SYSTEM.input(command)
-    function = {
+    SYSTEM.input(commands, 10, 1, "left")
+    func = {
         1:event.simulation,
         2:setWakeupTime,
         3:purchaseItem,
@@ -45,8 +45,10 @@ def shop():
         5:loadData,
         6:lambda:print("테스트5")
     }
-    function[RESULT]()
-    if RESULT == 1:
-        SYSTEM.delText(4)
+    RESULT = SYSTEM.RESULT
+
+    SYSTEM.after(func[RESULT]())
     if RESULT != 1:
-        SYSTEM.after(0, shop)
+        SYSTEM.after(startShop)
+    
+        

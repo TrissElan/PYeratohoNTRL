@@ -48,16 +48,21 @@ class Display:
         self.setup_text_area(frame211, 8, 64, self.font)
         self.textArea[2].pack(side='bottom', fill='both', padx=0, pady=0, expand=True)
         # frame212 전체에는 맵 정보 출력 텍스트 위젯
-        self.setup_text_area(frame212, 17, 36, self.font)
+        self.setup_text_area(frame212, 16, 36, self.font)
         self.textArea[3].pack(side='top', fill='both', padx=0, pady=0, expand=True)
 
-        # frame22를 다시 나눔 : frame221(top)과 self.bArea(bottom) 
+        # frame22를 다시 나눔 : frame221(top)과 frame222(bottom) 
         frame221 = tk.Frame(frame22, bg="black")
         frame221.pack(side='top', fill='x', expand=True)
-        self.bArea = tk.Frame(frame22, bg="black")
-        self.bArea.pack(side='top', fill='both', expand=True)
+        frame222 = tk.Frame(frame22, bg="black")
+        frame222.pack(side='top', fill='both', expand=True)
     
         # frame221은 대사 출력을 위한 텍스트위젯
         self.setup_text_area(frame221, 24, 100, self.font)
         self.textArea[4].pack(side='top', fill='both', padx=0, pady=0)
+        
+        # frame222는 클릭할 버튼을 출력하기 위한 텍스트위젯
+        self.setup_text_area(frame222, 59, 100, self.font)
+        self.textArea[5].pack(side='top', fill='both', padx=0, pady=0)
+
         self.root.update()
