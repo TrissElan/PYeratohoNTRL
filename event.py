@@ -1,7 +1,7 @@
 import MODULE.SystemModule as SM
 import MODULE.MapModule as MM
 import MODULE.CharacterModule as CM
-from COMMAND import Category1
+from COMMAND import Category100
 import MODULE.InformModule as IM
 
 SYSTEM = SM.System()
@@ -13,14 +13,23 @@ class Game:
         self.commands = None
         SYSTEM.GFLAG[0] = 3
         SYSTEM.delText(4)
-        self.phase0()
+        SYSTEM.after(self.phase0)
     
-    def select_target(self, target):
+    def select_target(self, target:CM.Character):
         global SYSTEM
-        chara:CM.Character = SYSTEM.CHARACTERS[self.current]
-        chara.TARGET = target
-        SYSTEM.setText(4, f"{SYSTEM.CHARACTERS[self.current].NAME("은는")} {target.NAME()}에게 가까이 다가간다...\n")
-        SYSTEM._RESULT.set(1000)
+        MASTER = SYSTEM.CHARACTERS[SYSTEM.MASTER]
+        CHARA:CM.Character = SYSTEM.CHARACTERS[self.current]
+        CHARA.TARGET = target
+
+        if CHARA in MASTER.CFLAG[11].SPACE:
+            if target.TARGET == None:
+                msg = f"{CHARA.NAME("은는")} {target.NAME()}에게 가까이 다가간다...\n"
+            elif target.TARGET == CHARA:
+                msg = f"{CHARA.NAME("은는")} 자신에게 다가온 {target.NAME()}에게 시선을 돌렸다.\n"
+            else:
+                msg = f"{CHARA.NAME("은는")} {target.TARGET.NAME("와과")} {target.NAME()} 사이에 끼어들었다!\n"
+
+            SYSTEM.setText(4, msg)
     
     def current_info(self):
         global SYSTEM
@@ -42,33 +51,33 @@ class Game:
             SYSTEM.DISPLAY.textArea[0].tag_bind(tagName, "<Button-1>", lambda e, target = char : self.select_target(target))
             start_index = end_index + 3  # +3 for the ' | '
     
+    # 기본설정
     def phase0(self):
-        chara:CM.Character = SYSTEM.CHARACTERS[self.current]
+        global SYSTEM
+        MASTER = SYSTEM.CHARACTERS[SYSTEM.MASTER]
+        CHARA:CM.Character = SYSTEM.CHARACTERS[self.current]
+
+        SYSTEM.RESULT = 0
 
         # 대상의 존재여부 확인 / 같은 방에 있어야만 선택된 상태로 유지됨
-        if chara.TARGET != None:
-            if chara.TARGET not in chara.CFLAG[11].SPACE:
-                chara.TARGET = None
+        if CHARA.TARGET != None:
+            if CHARA.TARGET not in CHARA.CFLAG[11].SPACE:
+                CHARA.TARGET = None
         
         # 대상이 없을 경우 대상을 선택함 / 현재는 33.3% 확률로 선정함
-        if chara.TARGET == None:
+        if CHARA != MASTER and CHARA.TARGET == None and len(CHARA.CFLAG[11].SPACE) > 1:
             RESULT = SYSTEM.RANDOM(3)
-            if len(chara.CFLAG[11].SPACE) >= 2 and RESULT == 1:
-                target_list = [target for target in chara.CFLAG[11].SPACE if target != chara]
-                chara.TARGET = target_list[SYSTEM.RANDOM(len(target_list))]
-        
-        # 사용할 커맨드 준비
-        self.commands = {1: "이동하기",2:"밥먹기",3:"잠자기",4:"휴식", 5:"대기"}
-        if chara.TARGET != None:
-            acommands = {6:"대화하기", 7:"장난치기", 8:"스킨쉽"}
-            self.commands.update(acommands)
+            targets = [chara for chara in CHARA.CFLAG[11].SPACE if chara != CHARA]
+            if RESULT == 1:
+                self.select_target(SYSTEM.CHOICE(targets))
 
         # 플레이어 턴인지 여부를 확인함
         if self.current == SYSTEM.MASTER:
-            self.phase1()
+            SYSTEM.after(self.phase1)
         else:
-            self.phase3()
+            SYSTEM.after(self.phase2)
 
+    # 화면에 출력할 정보 준비
     def phase1(self):
         global SYSTEM
 
@@ -77,7 +86,6 @@ class Game:
         SYSTEM.delText(1)
         SYSTEM.delText(2)
         SYSTEM.delText(3)
-        SYSTEM.delText(5)
 
         chara:CM.Character = SYSTEM.CHARACTERS[self.current]
 
@@ -94,51 +102,38 @@ class Game:
         # 3번 텍스트 위젯 - 지도 출력
         MM.showMap(chara.CFLAG[11].ID)
 
-        self.phase2()
+        SYSTEM.after(self.phase2)
         
+    # 메뉴를 출력하고 입력을 받음 - 사용자 턴일 경우
     def phase2(self):
         global SYSTEM
         if self.current == SYSTEM.MASTER:
-            SYSTEM.input(self.commands, 20, 3, "left")
+            SYSTEM.input(SYSTEM.COM, 20, 5, "left")
+        else:
+            SYSTEM.inputr(SYSTEM.COM)
         
-        self.phase3()
-        
+        SYSTEM.after(self.phase3)
+    
+    # 선택된 메뉴에 따라 행동을 실행함
     def phase3(self):
         global SYSTEM
-        if self.current == SYSTEM.MASTER:
-            RESULT = SYSTEM.RESULT
-        else:
-            RESULT = SYSTEM.RANDOM(len(self.commands)) + 1
+        
+        RESULT = SYSTEM.RESULT
 
         if RESULT == 0:
             return
+        elif RESULT == 1000:
+            SYSTEM.after(self.phase0)
+        elif RESULT == 1002:
+            SYSTEM.after(self.phase2)
         else:
-            if RESULT == 1000:
-                self.phase0()
-            else:
-                chara:CM.Character = SYSTEM.CHARACTERS[self.current]
-                func = {
-                    1:Category1.COM001,
-                    2:lambda chara : print(chara.NAME() + " : 밥먹는 중"),
-                    3:lambda chara : print(chara.NAME() + " : 잠자는 중"),
-                    4:lambda chara : print(chara.NAME() + " : 휴식하는 중"),
-                    5:lambda chara : print(chara.NAME() + " : 대기중 중"),
-                }
-                if chara.TARGET != None:
-                    afunc = {
-                        6:Category1.COM006,
-                        7:lambda chara : print(chara.NAME() + " : 장난치는 중"),
-                        8:lambda chara : print(chara.NAME() + " : 스킨쉽을 즐기는 중"),
-                    }
-                    func.update(afunc)
-                
-                func[RESULT](chara)
-            
-                self.current += 1
-                if self.current == (len(SYSTEM.CHARACTERS) - 1):
-                    self.current = 0
-                SYSTEM.see_end()
-                self.phase0()
+            chara:CM.Character = SYSTEM.CHARACTERS[self.current]
+            SYSTEM.COM[RESULT][1](chara)
+            self.current += 1
+            if self.current == (len(SYSTEM.CHARACTERS) - 1):
+                self.current = 0
+            SYSTEM.after(SYSTEM.see_end)
+            SYSTEM.after(self.phase0)
 
 def simulation():
     game = Game()

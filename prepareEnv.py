@@ -8,7 +8,8 @@ SYSTEM = SM.System()
 
 class PrepareEnvironments:
     def __init__(self):
-        self.phase0()
+        global SYSTEM
+        SYSTEM.after(self.phase0)
 
     def phase0(self):
         global SYSTEM
@@ -40,25 +41,25 @@ class PrepareEnvironments:
             for CHARA in SYSTEM.CHARACTERS:
                 CoM.setCloth(CHARA, 0, SYSTEM.CLOTHLIST)
         
-        self.phase1()
+        SYSTEM.after(self.phase1)
 
     def phase1(self):
         global SYSTEM
         SYSTEM.delText(4)
         SYSTEM.delText(5)
         SYSTEM.setText(4, "필요에 따라 각종 캐릭터의 수정/설정을 제공합니다.")
-        self.phase2()
+        SYSTEM.after(self.phase2)
 
     def phase2(self):
         global SYSTEM
         commands = {
-            1:"캐릭터 수정",
-            2:"복장 수정",
-            3:"후타나리화 적용",
-            4:"준비 완료"
+            1:("캐릭터 수정",None),
+            2:("복장 수정", None),
+            3:("후타나리화 적용",None),
+            4:("준비 완료", None)
         }
         SYSTEM.input(commands, 10, 1, "left")
-        self.phase3()
+        SYSTEM.after(self.phase3)
     
     def phase3(self):
         global SYSTEM
@@ -66,15 +67,15 @@ class PrepareEnvironments:
         # (1) 아나타에 대한 커스텀
         if RESULT == 1:
             print("아나타 커스텀!")
-            self.phase1()
+            SYSTEM.after(self.phase1)
         # (2) 복장 수정
         elif RESULT == 2:
             print("복장 수정")
-            self.phase1()
+            SYSTEM.after(self.phase1)
         # (3) 후타나리화
         elif RESULT == 3:
             print("후타나리화!")
-            self.phase1()
+            SYSTEM.after(self.phase1)
         # (4) 준비완료
         elif RESULT == 4:
             print("준비완료!")

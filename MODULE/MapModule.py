@@ -2,7 +2,6 @@ import MODULE.SystemModule as SM
 from collections import deque
 import re
 
-
 class Node:
     def __init__(self, name, id = None, desc = ""):
         self.ID = id

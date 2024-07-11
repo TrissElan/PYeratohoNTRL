@@ -37,6 +37,7 @@ class System:
         self.__initialize()
 
     def __initialize(self):
+
         with open("./DATA/VARSIZE.csv", "r", encoding="utf-8") as csvFile:
             result = read(csvFile)
             self.VARSIZE = {row[0]:int(row[1]) for row in result if row != []}
@@ -50,24 +51,6 @@ class System:
                 else:
                     self.SETTING[row[0]] += "\n" + row[1]
             self.SETTING["ANOUNCE"] += "\n"
-
-        with open("./DATA/TALENT.csv", "r", encoding="utf-8") as csvFile:
-            result = read(csvFile)
-            self.TALENTNAME = {}
-            for row in result:
-                if row == [] or row[0] == "" or row[0].startswith(";"):
-                    continue
-                else:
-                    self.TALENTNAME[int(row[0])] = row[1]
-
-        with open("./DATA/ABL.csv", "r", encoding="utf-8") as csvFile:
-            result = read(csvFile)
-            self.ABLNAME = {}
-            for row in result:
-                if row == [] or row[0] == "" or row[0].startswith(";"):
-                    continue
-                else:
-                    self.ABLNAME[int(row[0])] = row[1]
 
         # 경험치 명칭 DB 생성
         with open("./DATA/EXP.csv", "r", encoding="utf-8") as csvFile:
@@ -102,6 +85,27 @@ class System:
                         self.__PARAMNAME2[row[3]] = []
                         for i in range(4, len(row)):
                             self.__PARAMNAME2[row[3]].append(row[i])
+
+        # 사용할 커맨드 생성 - 객체가 생성된 후 진행함
+        self.COM = {}
+
+        with open("./DATA/TALENT.csv", "r", encoding="utf-8") as csvFile:
+            result = read(csvFile)
+            self.TALENTNAME = {}
+            for row in result:
+                if row == [] or row[0] == "" or row[0].startswith(";"):
+                    continue
+                else:
+                    self.TALENTNAME[int(row[0])] = row[1]
+
+        with open("./DATA/ABL.csv", "r", encoding="utf-8") as csvFile:
+            result = read(csvFile)
+            self.ABLNAME = {}
+            for row in result:
+                if row == [] or row[0] == "" or row[0].startswith(";"):
+                    continue
+                else:
+                    self.ABLNAME[int(row[0])] = row[1]
 
         with open("./DATA/EQUIP.csv", "r", encoding="utf-8") as csvFile:
             result = read(csvFile)
@@ -144,8 +148,10 @@ class System:
     
     @property
     def RESULT(self)->int:
-        self.DISPLAY.root.wait_variable(self._RESULT)
         return self._RESULT.get()
+    @RESULT.setter
+    def RESULT(self, value):
+        self._RESULT.set(value)
 
     # EXPNAME을 조합하여 반환하는 함수 - 첫번째 매개변수는 카테고리, 두번째 매개변수는 부위
     def EXPNAME(self, index1:int, index2:int = None):
@@ -180,10 +186,13 @@ class System:
         space = size - width
         return text + ' ' * space
     
-    # 클릭 가능한 텍스트 출력
-    def input(self, commands:dict, width, col = 4, align = "center"):
+    # 클릭 가능한 텍스트를 출력하여 입력을 받는 함수
+    def input(self, commands:dict, width, col = 4, align = "center")->None:
+        # 커맨드 정리
+        self.delText(5)
+
         # 커맨드 출력(태그 부여 전)
-        comtext = {key:f"[{key:03d}] - {value}" for key, value in commands.items()}
+        comtext = {key:f"[{key:03d}] - {value[0]}" for key, value in commands.items()}
         current_text = ""
         for i, text in enumerate(comtext.values()):
             current_text += self.fstr(text, width)
@@ -208,6 +217,12 @@ class System:
                     self.DISPLAY.textArea[5].tag_bind(tagName, "<Enter>", lambda e, tag=tagName: on_enter(e, tag))
                     self.DISPLAY.textArea[5].tag_bind(tagName, "<Leave>", lambda e, tag=tagName: on_leave(e, tag))
                     self.DISPLAY.textArea[5].tag_bind(tagName, "<Button-1>", lambda e, value = key : self._RESULT.set(value))
+        self.DISPLAY.root.wait_variable(self._RESULT)
+
+    # 임의선택함수
+    def inputr(self, commands:dict)->int:
+        key = rd.choice(list(commands.keys()))
+        self._RESULT.set(key)
 
     # 이벤트루트를 시작하는 메서드
     def mainloop(self):
@@ -245,3 +260,20 @@ class System:
     # 임의난수 생성함수
     def RANDOM(self, count):
         return rd.randrange(0, count)
+    
+    # 리스트에서 임의의 하나를 뽑아냄
+    def CHOICE(Self, lst:list):
+        return rd.choice(lst)
+    
+    # 커맨드 준비함수
+    def prepareCommand(self):
+        import inspect
+        from COMMAND import Category100
+        with open("./DATA/TRAIN.csv", "r", encoding="utf-8") as csvFile:    
+            result = read(csvFile)
+            commands = {name[3:]:func for name, func in inspect.getmembers(Category100) if inspect.isfunction(func)}
+            for row in result:
+                if row == [] or row[0] == "" or row[0].startswith(";"):
+                    continue
+                else:
+                    self.COM[int(row[0])] = (row[1], commands[row[0]])

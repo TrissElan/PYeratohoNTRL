@@ -25,7 +25,6 @@ class Character:
         self.CFLAG = getList(0, VARSIZE["CFLAG"], result["FLAG"])
         self.ABL = getList(0, VARSIZE["ABL"], source = result["ABL"] if "ABL" in result else None)
         
-        
         # 경험치 기록을 위한 DB 생성
         self.EXP = getList(None, VARSIZE["EXP"])
         with open("DATA/EXP.csv", "r", encoding="utf-8") as csvFile:

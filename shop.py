@@ -29,12 +29,12 @@ def startShop():
         SYSTEM.delText(i)
     SYSTEM.setText(4, "오늘도 힘쎄고 강한 아침이다!")
     commands = {
-        1:"기상하기",
-        2:"기상시간 설정",
-        3:"도구구매",
-        4:"저장하기",
-        5:"불러오기",
-        6:"옵션설정"
+        1:("기상하기", None),
+        2:("기상시간 설정", None),
+        3:("도구구매",None),
+        4:("저장하기",None),
+        5:("불러오기",None),
+        6:("옵션설정",None)
     }
     SYSTEM.input(commands, 10, 1, "left")
     func = {
@@ -47,7 +47,7 @@ def startShop():
     }
     RESULT = SYSTEM.RESULT
 
-    SYSTEM.after(func[RESULT]())
+    SYSTEM.after(func[RESULT])
     if RESULT != 1:
         SYSTEM.after(startShop)
     
