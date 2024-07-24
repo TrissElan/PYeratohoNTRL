@@ -17,23 +17,24 @@ def COM101(CHARA:CM.Character):
     else:
         SYSTEM.inputr(locations)
     RESULT = SYSTEM.RESULT
+
+    # 모종의 이유로 커맨드가 취소될 때 어느 페이즈부터 재시작하는지를 지정함
     if RESULT == 1002:
         return
-    else:
-        DESTINATION = SYSTEM.MAP[RESULT]
-
-        if CHARA != MASTER and MASTER in CHARA.CFLAG[11].SPACE:
-            SYSTEM.setText(4, f"{CHARA.NAME("은는")} {DESTINATION.NAME}으로 이동했다.\n")
+    
+    # 실제 커맨드 실행구간 - 나중에 경로에 따라 작동하도록 만들어야 할텐데...
+    DESTINATION = SYSTEM.MAP[RESULT]
+    if CHARA != MASTER and MASTER in CHARA.CFLAG[11].SPACE:
+        SYSTEM.setText(4, f"{CHARA.NAME("은는")} {DESTINATION.NAME}으로 이동했다.\n")
+    CHARA.CFLAG[11].SPACE.remove(CHARA)
+    CHARA.CFLAG[12] = CHARA.CFLAG[11]
+    DESTINATION.SPACE.append(CHARA)
+    CHARA.CFLAG[11] = DESTINATION
+    if CHARA != MASTER and MASTER in CHARA.CFLAG[11].SPACE:
+        SYSTEM.setText(4, f"{CHARA.NAME("이가")} {DESTINATION.NAME}에 왔다.\n")
         
-        # 나중게 경로에 따라 작동하도록 만들어야 할텐데...
-        CHARA.CFLAG[11].SPACE.remove(CHARA)
-        CHARA.CFLAG[12] = CHARA.CFLAG[11]
-        DESTINATION.SPACE.append(CHARA)
-        CHARA.CFLAG[11] = DESTINATION
-
-        if CHARA != MASTER and MASTER in CHARA.CFLAG[11].SPACE:
-            SYSTEM.setText(4, f"{CHARA.NAME("이가")} {DESTINATION.NAME}에 왔다.\n")
-        
+    # 정상실행시에 준비되는 값 - phase0부터 시작함을 의미함
+    SYSTEM.RESULT = 1000
 
 # 102 - 대화한다
 def COM102(CHARA:CM.Character):
@@ -41,7 +42,9 @@ def COM102(CHARA:CM.Character):
     TARGET = CHARA.TARGET
     MASTER = SYSTEM.CHARACTERS[SYSTEM.MASTER]
 
+    # 커맨드 취소구간
     if TARGET == None:
+        SYSTEM.RESULT = 1002
         return
     
     # EXP 증가
@@ -65,60 +68,129 @@ def COM102(CHARA:CM.Character):
         elif TARGET.CFLAG[20][CHARA.NAME()] <= 300:
             SYSTEM.setText(4, "날 바라보며 미소를 지어준다...\n")
         else:
-            SYSTEM.setText(4, "나와 대화를 하는 것이 즐거운 듯 하다...\n") 
+            SYSTEM.setText(4, "나와 대화를 하는 것이 즐거운 듯 하다...\n")
+    
+    # 정상실행시에 준비되는 값 - phase0부터 시작함을 의미함
+    SYSTEM.RESULT = 1000
 
 # 103 - 차를 탄다
 def COM103(CHARA:CM.Character):
     global SYSTEM
     TARGET = CHARA.TARGET
+    
+    # 커맨드 취소구간
     if TARGET == None:
+        SYSTEM.RESULT = 1002
         return
+    
+    # 실제 커맨드 실행구간
+    
+    # 실제 커맨드 실행구간
+    
+    # 정상실행시에 준비되는 값 - phase0부터 시작함을 의미함
+    SYSTEM.RESULT = 1000
 
 # 104 - 약을 탄다
 def COM104(CHARA:CM.Character):
     global SYSTEM
     TARGET = CHARA.TARGET
+    
+    # 커맨드 취소구간
     if TARGET == None:
+        SYSTEM.RESULT = 1002
         return
+    
+    # 실제 커맨드 실행구간
+    
+    # 정상실행시에 준비되는 값 - phase0부터 시작함을 의미함
+    SYSTEM.RESULT = 1000
 
 # 105 - 동행
 def COM105(CHARA:CM.Character):
     global SYSTEM
     TARGET = CHARA.TARGET
+    
+    # 커맨드 취소구간
     if TARGET == None:
+        SYSTEM.RESULT = 1002
         return
+    
+    # 실제 커맨드 실행구간
+    
+    # 정상실행시에 준비되는 값 - phase0부터 시작함을 의미함
+    SYSTEM.RESULT = 1000
 
 # 106 - 청소한다
 def COM106(CHARA:CM.Character):
     global SYSTEM
     TARGET = CHARA.TARGET
+    
+    # 커맨드 취소구간
     if TARGET == None:
+        SYSTEM.RESULT = 1002
         return
+    
+    # 실제 커맨드 실행구간
+    
+    # 정상실행시에 준비되는 값 - phase0부터 시작함을 의미함
+    SYSTEM.RESULT = 1000
 
 # 107 - 도와준다
 def COM107(CHARA:CM.Character):
     global SYSTEM
     TARGET = CHARA.TARGET
+    
+    # 커맨드 취소구간
     if TARGET == None:
+        SYSTEM.RESULT = 1002
         return
+    
+    # 실제 커맨드 실행구간
+    
+    # 정상실행시에 준비되는 값 - phase0부터 시작함을 의미함
+    SYSTEM.RESULT = 1000
 
 # 108 - 휴식한다
 def COM108(CHARA:CM.Character):
     global SYSTEM
     TARGET = CHARA.TARGET
+    
+    # 커맨드 취소구간
     if TARGET == None:
+        SYSTEM.RESULT = 1002
         return
+    
+    # 실제 커맨드 실행구간
+    
+    # 정상실행시에 준비되는 값 - phase0부터 시작함을 의미함
+    SYSTEM.RESULT = 1000
 
 # 109 - 화낸다
 def COM109(CHARA:CM.Character):
     global SYSTEM
     TARGET = CHARA.TARGET
+    
+    # 커맨드 취소구간
     if TARGET == None:
+        SYSTEM.RESULT = 1002
         return
+    
+    # 실제 커맨드 실행구간
+    
+    # 정상실행시에 준비되는 값 - phase0부터 시작함을 의미함
+    SYSTEM.RESULT = 1000
 
 # 110 - 사과한다
 def COM110(CHARA:CM.Character):
     global SYSTEM
     TARGET = CHARA.TARGET
+    
+    # 커맨드 취소구간
     if TARGET == None:
+        SYSTEM.RESULT = 1002
         return
+    
+    # 실제 커맨드 실행구간
+    
+    # 정상실행시에 준비되는 값 - phase0부터 시작함을 의미함
+    SYSTEM.RESULT = 1000

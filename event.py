@@ -1,7 +1,6 @@
 import MODULE.SystemModule as SM
 import MODULE.MapModule as MM
 import MODULE.CharacterModule as CM
-from COMMAND import Category100
 import MODULE.InformModule as IM
 
 SYSTEM = SM.System()
@@ -9,11 +8,21 @@ SYSTEM = SM.System()
 class Game:
     def __init__(self):
         global SYSTEM
-        self.current = 0
+        self.__current = 0
         self.commands = None
         SYSTEM.GFLAG[0] = 3
         SYSTEM.delText(4)
         SYSTEM.after(self.phase0)
+    
+    @property
+    def current(self):
+        return self.__current
+    @current.setter
+    def current(self, value):
+        global SYSTEM
+        self.__current = value
+        if self.__current == (len(SYSTEM.CHARACTERS) - 1):
+            self.__current = 0
     
     def select_target(self, target:CM.Character):
         global SYSTEM
@@ -117,23 +126,34 @@ class Game:
     # 선택된 메뉴에 따라 행동을 실행함
     def phase3(self):
         global SYSTEM
-        
         RESULT = SYSTEM.RESULT
+        chara:CM.Character = SYSTEM.CHARACTERS[self.current]
 
-        if RESULT == 0:
-            return
-        elif RESULT == 1000:
+        if SYSTEM.COM[RESULT] == None and RESULT != 0:
+            SYSTEM.setText(4, "명령어가 구현되어 있지 않습니다.\n")
+        else:
+            SYSTEM.COM[RESULT][1](chara)
+            
+        SYSTEM.after(self.phase4)
+        SYSTEM.after(SYSTEM.see_end)
+    
+    # 커맨드 실행후 결과값에 따라 phase 시작위치를 지정함
+    def phase4(self):
+        global SYSTEM
+        RESULT = SYSTEM.RESULT
+        if RESULT == 1000:
             SYSTEM.after(self.phase0)
+            self.current += 1
+        elif RESULT == 1001:
+            SYSTEM.after(self.phase1)
         elif RESULT == 1002:
             SYSTEM.after(self.phase2)
+        elif RESULT == 1003:
+            SYSTEM.after(self.phase3)
+        elif RESULT == 1004:
+            SYSTEM.after(self.phase4)
         else:
-            chara:CM.Character = SYSTEM.CHARACTERS[self.current]
-            SYSTEM.COM[RESULT][1](chara)
-            self.current += 1
-            if self.current == (len(SYSTEM.CHARACTERS) - 1):
-                self.current = 0
-            SYSTEM.after(SYSTEM.see_end)
-            SYSTEM.after(self.phase0)
+            return
 
 def simulation():
     game = Game()

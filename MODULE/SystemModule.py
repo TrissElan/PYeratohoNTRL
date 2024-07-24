@@ -1,5 +1,6 @@
 from csv import reader as read
 from json import load
+from collections import defaultdict
 import MODULE.DisplayModule as DM
 import MODULE.CharacterModule as CM
 import tkinter as tk
@@ -87,7 +88,7 @@ class System:
                             self.__PARAMNAME2[row[3]].append(row[i])
 
         # 사용할 커맨드 생성 - 객체가 생성된 후 진행함
-        self.COM = {}
+        self.COM = defaultdict(None)
 
         with open("./DATA/TALENT.csv", "r", encoding="utf-8") as csvFile:
             result = read(csvFile)
@@ -271,9 +272,13 @@ class System:
         from COMMAND import Category100
         with open("./DATA/TRAIN.csv", "r", encoding="utf-8") as csvFile:    
             result = read(csvFile)
-            commands = {name[3:]:func for name, func in inspect.getmembers(Category100) if inspect.isfunction(func)}
+            commands = {int(name[3:]):func for name, func in inspect.getmembers(Category100) if inspect.isfunction(func)}
             for row in result:
                 if row == [] or row[0] == "" or row[0].startswith(";"):
                     continue
                 else:
-                    self.COM[int(row[0])] = (row[1], commands[row[0]])
+                    cnum = int(row[0])
+                    if cnum in commands:
+                        self.COM[int(cnum)] = (row[1], commands[cnum])
+                    else:
+                        self.COM[int(cnum)] = None
