@@ -1,4 +1,4 @@
-README-KR
+=========================================== README-KR
 
 파이썬을 기반으로 한 텍스트게임 프로젝트입니다.
 
@@ -11,7 +11,9 @@ README-KR
 (2024 / 07 / 25) 현재 계속 개발이 진행중입니다. 아쉽게도 이 상태로는 즐길 수 있는게 없습니다. 죄송합니다.
 
 
-README-ENG
+
+
+=========================================== README-ENG
 
 This is a text-based game project developed using Python.
 
@@ -28,29 +30,11 @@ We kindly ask you to adhere to this license.
 ToDO List
 
 (1) Base System : 50%
-
-    - Character : 90%
-    
-    - Map : 80%
-    
-    - Cloth : 10%
-    
-    - Item : 0%
     
 (2) Phase System : 50%
 
-(3) Command System
+(3) Command System : 5%
 
-    - Category000 : 0 %
-    
-    - Category100 : 10%
-    
-    - Category200 : 0%
-    
-    - Category300 : 0%
-    
-    - Category400 : 0%
-    
 (4) Event System : 0%
 
 (5) ETC : 0%
