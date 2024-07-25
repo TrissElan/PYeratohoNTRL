@@ -10,7 +10,7 @@ def COM101(CHARA:CM.Character):
     MASTER = SYSTEM.CHARACTERS[SYSTEM.MASTER]
     locations = {}
     for location in CHARA.CFLAG[11].LINK:
-        locations[location.ID] = (location.NAME, None)
+        locations[location.ID] = (location.NAME(), None)
     if CHARA == MASTER:
         locations[1002] = ("취소", None)
         SYSTEM.input(locations, 25, 4, "left")
@@ -21,17 +21,21 @@ def COM101(CHARA:CM.Character):
     # 모종의 이유로 커맨드가 취소될 때 어느 페이즈부터 재시작하는지를 지정함
     if RESULT == 1002:
         return
-    
+
+    # 마스터와 같은 방에 있을 때 떠나는 경우의 배경텍스트 출력
+    if CHARA is not MASTER and MASTER in CHARA.CFLAG[11].SPACE:
+        SYSTEM.setText(4, (CHARA + "는 ") + (SYSTEM.MAP[RESULT] + "으로 이동했다.\n") )
+
     # 실제 커맨드 실행구간 - 나중에 경로에 따라 작동하도록 만들어야 할텐데...
     DESTINATION = SYSTEM.MAP[RESULT]
-    if CHARA != MASTER and MASTER in CHARA.CFLAG[11].SPACE:
-        SYSTEM.setText(4, f"{CHARA.NAME("은는")} {DESTINATION.NAME}으로 이동했다.\n")
     CHARA.CFLAG[11].SPACE.remove(CHARA)
     CHARA.CFLAG[12] = CHARA.CFLAG[11]
     DESTINATION.SPACE.append(CHARA)
     CHARA.CFLAG[11] = DESTINATION
-    if CHARA != MASTER and MASTER in CHARA.CFLAG[11].SPACE:
-        SYSTEM.setText(4, f"{CHARA.NAME("이가")} {DESTINATION.NAME}에 왔다.\n")
+
+    # 이동한 방이 마스터와 같은 방일 경우의 배경텍스트 출력
+    if CHARA is not MASTER and MASTER in CHARA.CFLAG[11].SPACE:
+        SYSTEM.setText(4, (CHARA + "가 ") + (DESTINATION + "에 왔다.\n") )
         
     # 정상실행시에 준비되는 값 - phase0부터 시작함을 의미함
     SYSTEM.RESULT = 1000
@@ -58,9 +62,9 @@ def COM102(CHARA:CM.Character):
         return
     else:
         if CHARA == MASTER or CHARA.TARGET == MASTER:
-            SYSTEM.setText(4, f"{CHARA.NAME("은는")} {TARGET.NAME("와과")} 가벼운 대화를 시작했다.\n")
+            SYSTEM.setText(4, (CHARA + "는 ") + (TARGET + "과 가벼운 대화를 시작했다.\n") )
         else:
-            SYSTEM.setText(4, f"{CHARA.NAME("은는")} 자신이 아닌 {TARGET.NAME("와과")} 가벼운 대화를 시작했다...\n")
+            SYSTEM.setText(4, (CHARA + "는 자신이 아닌 ") + (TARGET + "과 가벼운 대화를 시작했다...\n") )
         if TARGET.CFLAG[20][CHARA.NAME()] <= 100:
             SYSTEM.setText(4, "별 관심이 없어 보인다...\n")
         elif TARGET.CFLAG[20][CHARA.NAME()] <= 200:

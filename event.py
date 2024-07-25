@@ -21,38 +21,44 @@ class Game:
     def current(self, value):
         global SYSTEM
         self.__current = value
-        if self.__current == (len(SYSTEM.CHARACTERS) - 1):
-            self.__current = 0
+        if self.__current == len(SYSTEM.CHARACTERS):
+            self.current = 0
     
-    def select_target(self, target:CM.Character):
+    def select_target(self, OTHER:CM.Character):
         global SYSTEM
+        
         MASTER = SYSTEM.CHARACTERS[SYSTEM.MASTER]
+        
         CHARA:CM.Character = SYSTEM.CHARACTERS[self.current]
-        CHARA.TARGET = target
+        CHARA.TARGET = OTHER
 
         if CHARA in MASTER.CFLAG[11].SPACE:
-            if target.TARGET == None:
-                msg = f"{CHARA.NAME("은는")} {target.NAME()}에게 가까이 다가간다...\n"
-            elif target.TARGET == CHARA:
-                msg = f"{CHARA.NAME("은는")} 자신에게 다가온 {target.NAME()}에게 시선을 돌렸다.\n"
+            if OTHER.TARGET == None:
+                msg = (CHARA + "는 ") +  (OTHER + "에게 가까이 다가간다...\n")
+            elif OTHER.TARGET == CHARA:
+                msg = (CHARA + "는 자신에게 다가온 ") + (OTHER + "에게 시선을 돌렸다.\n")
             else:
-                msg = f"{CHARA.NAME("은는")} {target.TARGET.NAME("와과")} {target.NAME()} 사이에 끼어들었다!\n"
+                msg = (CHARA + "는 ")  + (OTHER.TARGET + "과 ") + (OTHER + " 사이에 끼어들었다!\n")
 
             SYSTEM.setText(4, msg)
     
     def current_info(self):
         global SYSTEM
-        chara:CM.Character = SYSTEM.CHARACTERS[self.current]
-        target_list = [target for target in chara.CFLAG[11].SPACE if target != chara]
-        target_text = ' | '.join(target.NAME() for target in target_list)
-        SYSTEM.setText(0, f"{SYSTEM.timeInfo} / 현재위치 : {chara.CFLAG[11].NAME} < {target_text} > ")
+        CHARA:CM.Character = SYSTEM.CHARACTERS[self.current]
+        PLACE = CHARA.CFLAG[11]
+
+        target_list = [target for target in PLACE.SPACE if target != CHARA]
+        target_text = ' | '.join(target.ANAME() for target in target_list)
+
+        SYSTEM.setText(0, f"{SYSTEM.timeInfo} / 현재위치 : {PLACE.NAME()} < {target_text} > ")
+
         current_text = SYSTEM.DISPLAY.textArea[0].get("1.0", "end-1c")
         start_index = 0
         for i, char in enumerate(target_list):
-            if char == chara:
+            if char == CHARA:
                 continue
-            start_index = current_text.find(char.NAME(), start_index)
-            end_index = start_index + len(char.NAME())
+            start_index = current_text.find(char.ANAME(), start_index)
+            end_index = start_index + len(char.ANAME())
             tagName = f"CHAR_{i}"
             SYSTEM.DISPLAY.textArea[0].tag_add(tagName, f"1.{start_index}", f"1.{end_index}")
             SYSTEM.DISPLAY.textArea[0].tag_bind(tagName, "<Enter>", lambda e, tag=tagName: SM.on_enter(e, tag))
@@ -96,20 +102,20 @@ class Game:
         SYSTEM.delText(2)
         SYSTEM.delText(3)
 
-        chara:CM.Character = SYSTEM.CHARACTERS[self.current]
+        CHARA:CM.Character = SYSTEM.CHARACTERS[self.current]
 
         # 0번 텍스트 위젯 : 시간 및 선택가능한 캐릭터 출력
         self.current_info()
 
             # 1번 텍스트 위젯 - 아나타의 파라미터 출력
-        IM.showParam(1, chara)
+        IM.showParam(1, CHARA)
 
             # 2번 텍스트 위젯 - 선택된 캐릭터가 있을 경우 선택된 캐릭터의 파라미터 출력
-        if chara.TARGET != None:
-            IM.showParam(2, chara.TARGET)
+        if CHARA.TARGET != None:
+            IM.showParam(2, CHARA.TARGET)
             
         # 3번 텍스트 위젯 - 지도 출력
-        MM.showMap(chara.CFLAG[11].ID)
+        MM.showMap(CHARA.CFLAG[11].ID)
 
         SYSTEM.after(self.phase2)
         
@@ -127,12 +133,12 @@ class Game:
     def phase3(self):
         global SYSTEM
         RESULT = SYSTEM.RESULT
-        chara:CM.Character = SYSTEM.CHARACTERS[self.current]
+        CHARA:CM.Character = SYSTEM.CHARACTERS[self.current]
 
         if SYSTEM.COM[RESULT] == None and RESULT != 0:
             SYSTEM.setText(4, "명령어가 구현되어 있지 않습니다.\n")
         else:
-            SYSTEM.COM[RESULT][1](chara)
+            SYSTEM.COM[RESULT][1](CHARA)
             
         SYSTEM.after(self.phase4)
         SYSTEM.after(SYSTEM.see_end)
@@ -141,10 +147,7 @@ class Game:
     def phase4(self):
         global SYSTEM
         RESULT = SYSTEM.RESULT
-        if RESULT == 1000:
-            SYSTEM.after(self.phase0)
-            self.current += 1
-        elif RESULT == 1001:
+        if RESULT == 1001:
             SYSTEM.after(self.phase1)
         elif RESULT == 1002:
             SYSTEM.after(self.phase2)
@@ -153,7 +156,8 @@ class Game:
         elif RESULT == 1004:
             SYSTEM.after(self.phase4)
         else:
-            return
+            SYSTEM.after(self.phase0)
+            self.current += 1
 
 def simulation():
     game = Game()

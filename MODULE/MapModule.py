@@ -5,13 +5,45 @@ import re
 class Node:
     def __init__(self, name, id = None, desc = ""):
         self.ID = id
-        self.NAME = name
+        self.__NAME = name
         self.SMELL = None
         self.STAIN = None
         self.LINK = []
         self.SPACE = []
+    
+    def NAME(self, after:str|None = None):
+        if after is None:
+            return self.__NAME
+        else:
+            # 한글 유니코드 범위: 0xAC00 ~ 0xD7A3
+            min_code = 0xAC00
+            max_code = 0xD7A3
+
+            # 별명의 마지막 글자의 코드값 취득
+            t_code = ord(self.__NAME[-1])
+
+            # 판별결과를 기록함 - 받침의 유무를 기록함
+            hasFinal = not (t_code < min_code or t_code > max_code or (t_code - min_code) % 28 == 0)
+
+            # 판별이 필요한 것인지 확인함
+            if after not in "으로":
+                return self.__NAME + after
+            else:
+                # 판별이 필요한 것이면 구별해서 자동 선택됨
+                return self.__NAME +  ("으로" if hasFinal else "로")
+
     def __str__(self):
         return f"{self.NAME} ({self.SMELL}, {self.STAIN})"
+    
+    def __add__(self, msg:str = None):
+        if msg[0] == "로":
+            return self.NAME(msg[0]) + msg[1:]
+        elif msg[:2] == "으로":
+            return self.NAME(msg[:2]) + msg[2:]
+        else:
+            return self.NAME() + msg
+
+
     
 def generateMap():
     # 외부 영역 / 6개 | // 10 == 0
