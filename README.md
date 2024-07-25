@@ -27,7 +27,16 @@ We kindly ask you to adhere to this license.
 
 
 
-ToDO List
+=========================================== ENVIRONMENT
+
+Latest Python(3.12.4) Only
+
+No Additional Module need yet
+
+
+
+
+=========================================== ToDO List
 
 (1) Base System : 50%
     
