@@ -1,4 +1,4 @@
-================================================================================= README-KR
+================================================================= README
 
 파이썬을 기반으로 한 텍스트게임 프로젝트입니다.
 
@@ -40,7 +40,7 @@
 
 -- Therefore, please do not buy me coffee with any expectation of reward.
 
-================================================================================= ENVIRONMENT
+================================================================= ENVIRONMENT
 
 HW : Rog Ally X (24GB RAM + 1TB SSD) + BT Keyboard + BT Mouse + 16inch Portable Monitor
 
@@ -50,7 +50,7 @@ EN : Visual Studio Code Latest + Latest Python(3.12.4) Only
 
 No Additional Module need yet
 
-================================================================================= Progress
+================================================================= Progress
 
 (1) Base System : 50%
     
@@ -66,7 +66,7 @@ No Additional Module need yet
 
 -- (2024 / 07 / 25) development is still ongoing. Unfortunately, the game is not yet in a playable state. We apologize for this.
 
-================================================================================= ETC
+================================================================= ETC
 
 커피는 생명의 물줄기이며, 우리의 정신을 깨우는 신성한 기적입니다.
 
