@@ -8,7 +8,8 @@ def setValue(target:list|dict, source:dict):
 
 def getList(value:any, size:int, source:dict = None):
     lst = [value for i in range(size)]
-    if source != None: setValue(lst, source)
+    if source != None:
+        setValue(lst, source)
     return lst
 
 class Character:
