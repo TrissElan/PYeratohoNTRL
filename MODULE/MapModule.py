@@ -35,7 +35,7 @@ class Node:
     def __str__(self):
         return f"{self.NAME} ({self.SMELL}, {self.STAIN})"
     
-    def __add__(self, msg:str = None):
+    def __mod__(self, msg:str = None):
         if msg[0] == "로":
             return self.NAME(msg[0]) + msg[1:]
         elif msg[:2] == "으로":

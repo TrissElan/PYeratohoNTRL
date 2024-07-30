@@ -17,6 +17,7 @@ class Game:
     @property
     def current(self):
         return self.__current
+    
     @current.setter
     def current(self, value):
         global SYSTEM
@@ -34,11 +35,11 @@ class Game:
 
         if CHARA in MASTER.CFLAG[11].SPACE:
             if OTHER.TARGET == None:
-                msg = (CHARA + "는 ") +  (OTHER + "에게 가까이 다가간다...\n")
+                msg = CHARA % "는 " +  OTHER % "에게 가까이 다가간다...\n"
             elif OTHER.TARGET == CHARA:
-                msg = (CHARA + "는 자신에게 다가온 ") + (OTHER + "에게 시선을 돌렸다.\n")
+                msg = CHARA % "는 자신에게 다가온 " + OTHER % "에게 시선을 돌렸다.\n"
             else:
-                msg = (CHARA + "는 ")  + (OTHER.TARGET + "과 ") + (OTHER + " 사이에 끼어들었다!\n")
+                msg = CHARA % "는 "  + OTHER.TARGET + "과 " + OTHER + " 사이에 끼어들었다!\n"
 
             SYSTEM.setText(4, msg)
     
@@ -48,7 +49,7 @@ class Game:
         PLACE = CHARA.CFLAG[11]
 
         target_list = [target for target in PLACE.SPACE if target != CHARA]
-        target_text = ' | '.join(target.ANAME() for target in target_list)
+        target_text = ' | '.join(target.NAME() for target in target_list)
 
         SYSTEM.setText(0, f"{SYSTEM.timeInfo} / 현재위치 : {PLACE.NAME()} < {target_text} > ")
 
@@ -57,8 +58,8 @@ class Game:
         for i, char in enumerate(target_list):
             if char == CHARA:
                 continue
-            start_index = current_text.find(char.ANAME(), start_index)
-            end_index = start_index + len(char.ANAME())
+            start_index = current_text.find(char.NAME(), start_index)
+            end_index = start_index + len(char.NAME())
             tagName = f"CHAR_{i}"
             SYSTEM.DISPLAY.textArea[0].tag_add(tagName, f"1.{start_index}", f"1.{end_index}")
             SYSTEM.DISPLAY.textArea[0].tag_bind(tagName, "<Enter>", lambda e, tag=tagName: SM.on_enter(e, tag))

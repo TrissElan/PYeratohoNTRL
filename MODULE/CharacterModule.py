@@ -19,8 +19,7 @@ class Character:
         
         # JSON파일에 들어있어야 하는 파트
         self.ID = result["ID"]
-        self.__NAME = result["NAME"]
-        self.__ANAME = result["ANAME"]
+        self.__NAME = [result["ANAME"], result["NAME"]]
         self.TALENT = getList(-3, VARSIZE["TALENT"], result["TALENT"])
         self.BODY = getList(-3, VARSIZE["BODY"], result["BODY"])
         self.CFLAG = getList(0, VARSIZE["CFLAG"], result["FLAG"])
@@ -78,16 +77,16 @@ class Character:
         # 캐릭터가 선택한 대상을 기록하는 변수
         self.TARGET:Character = None
     
-    def NAME(self, after:str|None = None):
+    def NAME(self, after:str|None = None, index = 0):
         if after is None:
-            return self.__NAME
+            return self.__NAME[index]
         else:
             # 한글 유니코드 범위: 0xAC00 ~ 0xD7A3
             min_code = 0xAC00
             max_code = 0xD7A3
 
             # 이름의 마지막 글자의 코드값 취득
-            final_code = ord(self.__NAME[-1])
+            final_code = ord(self.__NAME[index][-1])
 
             # 판별결과를 기록함 - 받침의 유무를 기록함
             hasFinal = not (final_code < min_code or final_code > max_code or (final_code - min_code) % 28 == 0)
@@ -97,41 +96,15 @@ class Character:
             for afters in afterList:
                 # 받침을 찾았으면 받침유무에 따라 최종적으로 사용할 문자를 선택함
                 if after in afters:
-                    return self.__NAME +  (afters[0] if hasFinal else afters[1])
+                    return self.__NAME[index] +  (afters[0] if hasFinal else afters[1])
             # 못찾았으면 그대로 반환
-            return self.__NAME + after
+            return self.__NAME[index] + after
     
-    def ANAME(self, after:str|None = None):
-        if after is None:
-            return self.__ANAME
-        else:
-            # 한글 유니코드 범위: 0xAC00 ~ 0xD7A3
-            min_code = 0xAC00
-            max_code = 0xD7A3
-
-            # 별명의 마지막 글자의 코드값 취득
-            final_code = ord(self.__ANAME[-1])
-
-            # 판별결과를 기록함 - 받침의 유무를 기록함
-            hasFinal = not (final_code < min_code or final_code > max_code or (final_code - min_code) % 28 == 0)
-
-            # 해당되는 받침을 찾음
-            afterList = ("은는", "이가", "을를", "과와")
-            for afters in afterList:
-                # 받침을 찾았으면 받침유무에 따라 최종적으로 사용할 문자를 선택함
-                if after in afters:
-                    return self.__ANAME +  (afters[0] if hasFinal else afters[1])
-            # 못찾았으면 그대로 반환
-            return self.__ANAME + after
-            
-    def __str__(self):
-        return self.__ANAME
-    
-    def __add__(self, msg:str):
+    def __mod__(self, msg:str):
         if msg[0] == ' ' or msg[:2] == "에게" or msg[:2] == "한테":
-            return self.ANAME() + msg
+            return self.NAME() + msg
         else:
-            return self.ANAME(msg[0]) + msg[1:]
+            return self.NAME(msg[0]) + msg[1:]
     
     
     
