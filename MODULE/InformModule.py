@@ -60,8 +60,18 @@ def EXPLV(exp, index)->str:
     else:
         return "Lv.00"
 
-def showParam(area, chara):
+def showParam(CHARA):
     global SYSTEM
+    MASTER = SYSTEM.CHARACTERS[SYSTEM.MASTER]
+    if CHARA is MASTER:
+        area = 1
+    else:
+        area = 2
+    
+    line1 = CHARA.NAME % f"HP : [][][]"
+    line2 = ""
+    line3 = ""
+    line4 = ""
     # 내용물 재구성해야 함
     # SYSTEM.setText(area, result)
 

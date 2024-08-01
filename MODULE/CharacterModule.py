@@ -25,11 +25,10 @@ class Character:
         self.CFLAG = getList(0, VARSIZE["CFLAG"], result["FLAG"])
         self.ABL = getList(0, VARSIZE["ABL"], source = result["ABL"] if "ABL" in result else None)
         
-        # 경험치 기록을 위한 DB 생성
+        # 경험치 기록을 위한 DB 생성 - 기록만 하면 되는거니 생성만 진행
         self.EXP = getList(None, VARSIZE["EXP"])
         with open("DATA/EXP.csv", "r", encoding="utf-8") as csvFile:
-            result = read(csvFile)
-            for row in result:
+            for row in read(csvFile):
                 if row == [] or row[0] == "" or row[0].startswith(";"):
                     continue
                 else:
@@ -38,18 +37,32 @@ class Character:
                     else:
                         self.EXP[int(row[0])] = [0 for i in range(int(row[2]))]
 
-        # 파라미터 기록을 위한 DB 생성
+        # 파라미터 기록을 위한 DB 생성 - 최대값 설정도 변행해야 하니 같이 진행
         self.PARAM = getList(None, VARSIZE["PARAM"])
         with open("DATA/PARAM.csv", "r", encoding="utf-8") as csvFile:
-            result = read(csvFile)
-            for row in result:
+            # 먼저 CSV에서 설정된 구조에 따라 DB를 생성함
+            for row in read(csvFile):
                 if row == [] or row[0] == "" or row[0].startswith(";"):
                     continue
                 else:
-                    if row[1] != "0":
-                        self.PARAM[int(row[0])] = [[0 for i in range(int(row[2]))] for i in range(int(row[1]))]
-                    else:
+                    if row[1] == "0":
                         self.PARAM[int(row[0])] = [0 for i in range(int(row[2]))]
+                    else:
+                        if row[2] == "dict":
+                            self.PARAM[int(row[0])] = defaultdict(lambda:[0 for i in range(int(row[1]))])
+                        else:
+                            self.PARAM[int(row[0])] = [[0 for i in range(int(row[2]))] for i in range(int(row[1]))]
+            # DB에 json에 설정해놓은 최대값이 존재하는 것들은 최대 값을 모두 기록함
+            for i, alist in enumerate(result["PARAM"]):
+                for j, maxValue in enumerate(alist):
+                    self.PARAM[i][j][1] = maxValue
+            
+            # 이후 일부 파라미터에 대해 보정을 진행함
+            # (1) 여성은 정액이 없음
+            if self.TALENT[0] == 0:
+                self.PARAM[1][0][0] = None
+            # (2) 남자는 애초에 모유가 없고, 여성과 후타나리는 임신하지 않으면 모유가 없음
+            self.PARAM[1][1][0] = None
         
         # JSON파일에 들어있으며 안되는 파트
         self.ITEM = getList(None, VARSIZE["ITEM"])
@@ -106,10 +119,12 @@ class Character:
         else:
             return self.NAME(msg[0]) + msg[1:]
     
-    
-    
+# 게임 내에서 등장하는 캐릭터 목록을 준비하는 함수
 def prepareCharacters(VARSIZE):
     cList = []
-    for index in range(VARSIZE["CHARA"]):
-        cList.append(Character(index, VARSIZE))
+
+    # 기초 정보를 토대로 캐릭터를 생성함
+    for i in range(VARSIZE["CHARA"]):
+        cList.append(Character(i, VARSIZE))
+
     return cList
