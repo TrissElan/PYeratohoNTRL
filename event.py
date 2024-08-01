@@ -27,26 +27,30 @@ class Game:
     
     def select_target(self, OTHER:CM.Character):
         global SYSTEM
-        
-        MASTER = SYSTEM.CHARACTERS[SYSTEM.MASTER]
-        
+
+        MASTER:CM.Character = SYSTEM.CHARACTERS[SYSTEM.MASTER]
         CHARA:CM.Character = SYSTEM.CHARACTERS[self.current]
-        CHARA.TARGET = OTHER
 
-        if CHARA in MASTER.CFLAG[11].SPACE:
-            if OTHER.TARGET == None:
-                msg = CHARA % "는 " +  OTHER % "에게 가까이 다가간다...\n"
-            elif OTHER.TARGET == CHARA:
-                msg = CHARA % "는 자신에게 다가온 " + OTHER % "에게 시선을 돌렸다.\n"
-            else:
-                msg = CHARA % "는 "  + OTHER.TARGET + "과 " + OTHER + " 사이에 끼어들었다!\n"
-
-            SYSTEM.setText(4, msg)
+        if MASTER.TARGET is not None:
+            return
+        else:
+            CHARA.TARGET = OTHER
+            if CHARA in MASTER.CFLAG[11].SPACE:
+                if OTHER.TARGET == None:
+                    msg = CHARA % "는 " +  OTHER % "에게 가까이 다가간다...\n"
+                elif OTHER.TARGET == CHARA:
+                    msg = CHARA % "는 자신에게 다가온 " + OTHER % "에게 시선을 돌렸다.\n"
+                else:
+                    msg = CHARA % "는 "  + OTHER.TARGET + "과 " + OTHER + " 사이에 끼어들었다!\n"
+                SYSTEM.setText(4, msg)
+            SYSTEM.delText(1)
+            IM.showParam(MASTER, 1)
+            IM.showParam(OTHER, 2)
     
     def current_info(self):
         global SYSTEM
         CHARA:CM.Character = SYSTEM.CHARACTERS[self.current]
-        PLACE = CHARA.CFLAG[11]
+        PLACE:MM.Node = CHARA.CFLAG[11]
 
         target_list = [target for target in PLACE.SPACE if target != CHARA]
         target_text = ' | '.join(target.NAME() for target in target_list)
@@ -54,7 +58,7 @@ class Game:
         SYSTEM.setText(0, f"{SYSTEM.timeInfo} / 현재위치 : {PLACE.NAME()} < {target_text} > ")
 
         current_text = SYSTEM.DISPLAY.textArea[0].get("1.0", "end-1c")
-        start_index = 0
+        start_index = current_text.find('<') + 1 
         for i, char in enumerate(target_list):
             if char == CHARA:
                 continue
@@ -70,7 +74,7 @@ class Game:
     # 기본설정
     def phase0(self):
         global SYSTEM
-        MASTER = SYSTEM.CHARACTERS[SYSTEM.MASTER]
+        MASTER:CM.Character = SYSTEM.CHARACTERS[SYSTEM.MASTER]
         CHARA:CM.Character = SYSTEM.CHARACTERS[self.current]
 
         SYSTEM.RESULT = 0
@@ -103,17 +107,19 @@ class Game:
         SYSTEM.delText(2)
         SYSTEM.delText(3)
 
+        # 캐릭터와 캐릭터가 상호작용중인 대상 준비
         CHARA:CM.Character = SYSTEM.CHARACTERS[self.current]
+        TARGET:CM.Character = CHARA.TARGET
 
         # 0번 텍스트 위젯 : 시간 및 선택가능한 캐릭터 출력
         self.current_info()
 
-            # 1번 텍스트 위젯 - 아나타의 파라미터 출력
-        IM.showParam(1, CHARA)
+        # 1번 텍스트 위젯 - 아나타의 파라미터 출력
+        IM.showParam(CHARA, 1)
 
-            # 2번 텍스트 위젯 - 선택된 캐릭터가 있을 경우 선택된 캐릭터의 파라미터 출력
-        if CHARA.TARGET != None:
-            IM.showParam(2, CHARA.TARGET)
+        # 2번 텍스트 위젯 - 선택된 캐릭터가 있을 경우 선택된 캐릭터의 파라미터 출력
+        if TARGET != None:
+            IM.showParam(CHARA.TARGET, 2)
             
         # 3번 텍스트 위젯 - 지도 출력
         MM.showMap(CHARA.CFLAG[11].ID)

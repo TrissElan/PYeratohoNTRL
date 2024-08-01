@@ -49,7 +49,7 @@ class Character:
                         self.PARAM[int(row[0])] = [0 for i in range(int(row[2]))]
                     else:
                         if row[2] == "dict":
-                            self.PARAM[int(row[0])] = defaultdict(lambda:[0 for i in range(int(row[1]))])
+                            self.PARAM[int(row[0])] = defaultdict(lambda size = int(row[1]):[0 for i in range(size)])
                         else:
                             self.PARAM[int(row[0])] = [[0 for i in range(int(row[2]))] for i in range(int(row[1]))]
             # DB에 json에 설정해놓은 최대값이 존재하는 것들은 최대 값을 모두 기록함
@@ -61,7 +61,11 @@ class Character:
             # (1) 여성은 정액이 없음
             if self.TALENT[0] == 0:
                 self.PARAM[1][0][0] = None
-            # (2) 남자는 애초에 모유가 없고, 여성과 후타나리는 임신하지 않으면 모유가 없음
+            # (2) 남자는 질과 자궁이 없음
+            if self.TALENT[0] == 1:
+                self.PARAM[3][1] = None
+                self.PARAM[3][5] = None
+            # (3) 남자는 애초에 모유가 없고, 여성과 후타나리는 임신하지 않으면 모유가 없음
             self.PARAM[1][1][0] = None
         
         # JSON파일에 들어있으며 안되는 파트

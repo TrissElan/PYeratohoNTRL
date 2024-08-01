@@ -178,6 +178,7 @@ class System:
 
     # 텍스트 포맷팅
     def fstr(self, text, size):
+        text = str(text)
         width = 0
         for char in text:
             if unicodedata.east_asian_width(char) in 'FWA':
