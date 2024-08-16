@@ -13,6 +13,14 @@ class Game:
         SYSTEM.GFLAG[0] = 3
         SYSTEM.delText(4)
         SYSTEM.after(self.phase0)
+
+        # 정보출력을 위한 임시옵션 설정
+        SYSTEM.GFLAG[100] = True
+        SYSTEM.GFLAG[101] = True
+        SYSTEM.GFLAG[102] = True
+        SYSTEM.GFLAG[103] = True
+        SYSTEM.GFLAG[104] = True
+        SYSTEM.GFLAG[105] = True
     
     @property
     def current(self):

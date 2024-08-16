@@ -19,7 +19,7 @@ class Character:
         
         # JSON파일에 들어있어야 하는 파트
         self.ID = result["ID"]
-        self.__NAME = [result["ANAME"], result["NAME"]]
+        self.__NAME = [result["NAME"], result["ANAME"]]
         self.TALENT = getList(-3, VARSIZE["TALENT"], result["TALENT"])
         self.BODY = getList(-3, VARSIZE["BODY"], result["BODY"])
         self.CFLAG = getList(0, VARSIZE["CFLAG"], result["FLAG"])
@@ -84,6 +84,10 @@ class Character:
 
         # 호감도를 관리하기 위한 변수
         self.CFLAG[20] = defaultdict(int)
+        # 신뢰도를 관리하기 위한 변수
+        self.CFLAG[21] = defaultdict(int)
+        # 굴복도를 관리하기 위한 변수
+        self.CFLAG[22] = defaultdict(int)
 
         # 부가된 명령을 수행하는데 걸리는 소요시간을 기록하는 변수
         self.remainTime = 0
@@ -94,7 +98,7 @@ class Character:
         # 캐릭터가 선택한 대상을 기록하는 변수
         self.TARGET:Character = None
     
-    def NAME(self, after:str|None = None, index = 0):
+    def NAME(self, after:str|None = None, index = 1):
         if after is None:
             return self.__NAME[index]
         else:
