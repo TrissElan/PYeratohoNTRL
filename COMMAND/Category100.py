@@ -1,8 +1,9 @@
 import MODULE.SystemModule as SM
-import random as rd
 import MODULE.CharacterModule as CM
 
 SYSTEM = SM.System()
+
+# 모든 커맨드는 매개변수로 특정 커맨드를 실행하는 캐릭터를 받음
 
 # 101 - 이동한다
 def COM101(CHARA:CM.Character):
@@ -41,10 +42,11 @@ def COM101(CHARA:CM.Character):
     SYSTEM.RESULT = 1000
 
 # 102 - 대화한다
-def COM102(CHARA:CM.Character):
+def COM102(MASTER:CM.Character):
     global SYSTEM
-    TARGET = CHARA.TARGET
-    MASTER = SYSTEM.CHARACTERS[SYSTEM.MASTER]
+    PLAYER = SYSTEM.CHARACTERS[SYSTEM.MASTER]
+
+    TARGET = MASTER.TARGET
 
     # 커맨드 취소구간
     if TARGET == None:
@@ -52,27 +54,42 @@ def COM102(CHARA:CM.Character):
         return
     
     # EXP 증가
+    MASTER.EXP[9][1] += 1
+    TARGET.EXP[9][1] += 1
 
-    # PARAM 증가
-
+    # PARAM 증감
+    # - 커맨드를 실행하는 캐릭터
+    MASTER.updateBASE1(VIT = -10, RAT = -1, FTG = 1)
+    MASTER.updateBASE2()
+    MASTER.updateBASE3()
+    MASTER.updatePLSR()
+    MASTER.updateMOOD(TARGET.NAME(index = 0))
+    
+    # - 커맨드의 대상 캐릭터
+    TARGET.updateBASE1(VIT = -10, RAT = -1, FTG = 1)
+    TARGET.updateBASE2()
+    TARGET.updateBASE3()
+    TARGET.updatePLSR()
+    TARGET.updateMOOD(MASTER.NAME(index = 0))
+    
     # 호감도 증가
 
     # 커맨드 구상 출력 영역
-    if CHARA not in MASTER.CFLAG[11].SPACE:
+    if MASTER not in MASTER.CFLAG[11].SPACE:
         return
     else:
-        if CHARA == MASTER or CHARA.TARGET == MASTER:
-            SYSTEM.setText(4, CHARA % "는 " + TARGET % "과 가벼운 대화를 시작했다.\n")
+        if MASTER == PLAYER or MASTER.TARGET == PLAYER:
+            SYSTEM.setText(4, MASTER % "는 " + TARGET % "과 가벼운 대화를 시작했다.\n")
         else:
-            SYSTEM.setText(4, CHARA % "는 자신이 아닌 " + TARGET % "과 가벼운 대화를 시작했다...\n")
-        if TARGET.CFLAG[20][CHARA.NAME()] <= 100:
+            SYSTEM.setText(4, MASTER % "는 자신이 아닌 " + TARGET % "과 가벼운 대화를 시작했다...\n")
+        if TARGET.CFLAG[20][MASTER.NAME()] <= 100:
             SYSTEM.setText(4, "별 관심이 없어 보인다...\n")
-        elif TARGET.CFLAG[20][CHARA.NAME()] <= 200:
+        elif TARGET.CFLAG[20][MASTER.NAME()] <= 200:
             SYSTEM.setText(4, "가끔씩 미소를 짓는데 너무나 눈부시다...\n")
-        elif TARGET.CFLAG[20][CHARA.NAME()] <= 300:
-            SYSTEM.setText(4, "날 바라보며 미소를 지어준다...\n")
+        elif TARGET.CFLAG[20][MASTER.NAME()] <= 300:
+            SYSTEM.setText(4, "미소를 지어준다...\n")
         else:
-            SYSTEM.setText(4, "나와 대화를 하는 것이 즐거운 듯 하다...\n")
+            SYSTEM.setText(4, "환한 미소를 만들고 있다...\n")
     
     # 정상실행시에 준비되는 값 - phase0부터 시작함을 의미함
     SYSTEM.RESULT = 1000

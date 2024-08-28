@@ -1,5 +1,6 @@
 from json import load
 from csv import reader as read
+from PIL import Image, ImageTk
 from collections import defaultdict
 
 def setValue(target:list|dict, source:dict):
@@ -17,6 +18,8 @@ class Character:
         with open(f"DATA/CHARA{id}.json", "r", encoding="utf-8") as jsonFile:
             result = load(jsonFile)
         
+        self.IMG = ImageTk.PhotoImage(Image.open(f"./RESOURCE/{id}.png"))
+
         # JSON파일에 들어있어야 하는 파트
         self.ID = result["ID"]
         self.__NAME = [result["NAME"], result["ANAME"]]
@@ -60,12 +63,14 @@ class Character:
             # 이후 일부 파라미터에 대해 보정을 진행함
             # (1) 여성은 정액이 없음
             if self.TALENT[0] == 0:
+                self.PARAM[0][5][0] = None
                 self.PARAM[1][0][0] = None
             # (2) 남자는 질과 자궁이 없음
             if self.TALENT[0] == 1:
                 self.PARAM[3][1] = None
                 self.PARAM[3][5] = None
             # (3) 남자는 애초에 모유가 없고, 여성과 후타나리는 임신하지 않으면 모유가 없음
+            self.PARAM[0][6][0] = None
             self.PARAM[1][1][0] = None
         
         # JSON파일에 들어있으며 안되는 파트
@@ -126,7 +131,100 @@ class Character:
             return self.NAME() + msg
         else:
             return self.NAME(msg[0]) + msg[1:]
+        
+    # updateBASE1 메서드 : 심신과 관련된 수치를 반영하기 위한 메서드
+    # - 호출할 때는 2가지 유형으로 호출함
+    # chara.updateBASE1(1,2,3) or chara.updateBASE1(MLK = 100)
+    def updateBASE1(self, VIT = 0, RAT = 0, ARL = 0, FTG = 0, SLP = 0, SEM = 0, MLK = 0):
+        self.PARAM[0][0][0] += VIT  # 체력
+        self.PARAM[0][1][0] += RAT  # 이성
+        self.PARAM[0][2][0] += ARL  # 성욕
+        self.PARAM[0][3][0] += FTG  # 피로
+        self.PARAM[0][4][0] += SLP  # 수면
+        # 남성이나 후타나리이면 정액수치를 반영함
+        if self.TALENT[0] >= 1:
+            self.PARAM[0][5][0] += SEM  # 정액
+        # 여성이나 후타나리이면 모유수치를 반영함 / 단, 어디까지나 None일 경우에만 가능함
+        if self.TALENT[0] != 1 and self.PARAM[0][6][0] is not None:
+            self.PARAM[0][6][0] += MLK  # 모유
+
+        # 현재치가 최대치를 초과했을 경우 최대치로 변경함
+        for param in self.PARAM[0]:
+            if param[0] is not None:
+                if param[0] > param[1]:
+                    param[0] = param[1]
+        # 현재치가 최소치(0) 미만일 경우 최소치로 변경함
+        for param in self.PARAM[0]:
+            if param[0] is not None:
+                if param[0] < 0:
+                    param[0] = 0
+
+    # updateBASE2 메서드 : 욕구와 관련된 수치를 반영하기 위한 메서드
+    # - 호출할 때는 updateBASE1과 동일한 방식으로 호출함
+    def updateBASE2(self, SEM = 0, MLK = 0, SIO = 0, PEE = 0, POO = 0):
+        # 남성이나 후타나리이면 사정욕구를 반영함
+        if self.TALENT[0] >= 1:
+            self.PARAM[1][0][0] += SEM  # 사정욕구
+        # 여성이나 후타나리이면 분유욕구를 반영함 / 단, 어디까지나 None일 경우에만 가능함
+        if self.TALENT[0] != 1 and self.PARAM[1][1][0] is not None:
+            self.PARAM[1][1][0] += MLK  # 분유욕구
+        self.PARAM[1][2][0] += SIO  # 시오후키
+        self.PARAM[1][3][0] += PEE  # 소변욕구
+        self.PARAM[1][4][0] += POO  # 대변욕구
+
+        # 현재치가 최대치를 초과했을 경우 최대치로 변경함
+        for param in self.PARAM[1]:
+            if param[0] is not None:
+                if param[0] > param[1]:
+                    param[0] = param[1]
+        # 현재치가 최소치(0) 미만일 경우 최소치로 변경함
+        for param in self.PARAM[1]:
+            if param[0] is not None:
+                if param[0] < 0:
+                    param[0] = 0
+
+    # updateBASE3 메서드 : 발기와 관련된 수치를 반영하기 위한 메서드
+    # - 호출할 때는 updateBASE1과 동일한 방식으로 호출함
+    def updateBASE3(self, SIZE1 = 0, SIZE2 = 0):
+        self.PARAM[2][0][0] += SIZE1  # 자지 / 클리 발기
+        self.PARAM[2][1][0] += SIZE2  # 유두 발기
+
+        # 현재치가 최대치를 초과했을 경우 최대치로 변경함
+        for param in self.PARAM[2]:
+            if param[0] is not None:
+                if param[0] > param[1]:
+                    param[0] = param[1]
+        # 현재치가 최소치(0) 미만일 경우 최소치로 변경함
+        for param in self.PARAM[2]:
+            if param[0] is not None:
+                if param[0] < 0:
+                    param[0] = 0
+
+    # updatePlsr : 쾌감수치를 반영하기 위한 메서드
+    # - 호출할 때는 updateBASE1과 동일한 방식으로 호출함
+    # - 절정처리는 이벤트가 트리거되면 이루어지며, 일정수치만큼 감소시킴
+    # - 이벤트가 트리거가 안되면 누적후 자연감소로 이어지며 자연감소량에 따라 성욕이 올라가도록 설계하자
+    def updatePLSR(self, C = 0, V = 0, A = 0, B = 0, M = 0, W = 0):
+        self.PARAM[3][0] += C
+        if self.TALENT[0] != 1:
+            self.PARAM[3][1] += V
+        self.PARAM[3][2] += A
+        self.PARAM[3][3] += B
+        self.PARAM[3][4] += M
+        if self.TALENT[0] != 1:
+            self.PARAM[3][5] += W
+        for i in range(len(self.PARAM[3])):
+            if self.PARAM[3][i] is not None and self.PARAM[3][i] < 0:
+                self.PARAM[3][i] = 0
     
+    # updateMood : 지정된 캐릭터에 대한 감정을 반영하기 위한 메서드
+    def updateMOOD(self, otherName, i0 = 0, i1 = 0, i2 = 0, i3 = 0, i4 = 0):
+        self.PARAM[4][otherName][0] += i0
+        self.PARAM[4][otherName][1] += i1
+        self.PARAM[4][otherName][2] += i2
+        self.PARAM[4][otherName][3] += i3
+        self.PARAM[4][otherName][4] += i4
+
 # 게임 내에서 등장하는 캐릭터 목록을 준비하는 함수
 def prepareCharacters(VARSIZE):
     cList = []

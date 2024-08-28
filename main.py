@@ -21,7 +21,6 @@ class StartMenu:
 
     def phase1(self):
         global SYSTEM
-        SYSTEM.setText(4, "\n" * 5)
         SYSTEM.drawLine(4, "-")
         SYSTEM.setText(4, "\n" * 4 + SYSTEM.SETTING["ANOUNCE"] + "\n" * 4, "center")
         SYSTEM.drawLine(4, "-")
