@@ -22,7 +22,10 @@ def COM101(CHARA:CM.Character):
     # 모종의 이유로 커맨드가 취소될 때 어느 페이즈부터 재시작하는지를 지정함
     if RESULT == 1002:
         return
-
+    # 그렇지 않을 경우 정상 실행으로 간주함
+    else:
+        SYSTEM.RESULT = 1000
+        
     # 마스터와 같은 방에 있을 때 떠나는 경우의 배경텍스트 출력
     if CHARA is not MASTER and MASTER in CHARA.CFLAG[11].SPACE:
         SYSTEM.setText(4, CHARA % "는 " + SYSTEM.MAP[RESULT] % "으로 이동했다.\n" )
@@ -37,9 +40,7 @@ def COM101(CHARA:CM.Character):
     # 이동한 방이 마스터와 같은 방일 경우의 배경텍스트 출력
     if CHARA is not MASTER and MASTER in CHARA.CFLAG[11].SPACE:
         SYSTEM.setText(4, CHARA % "가 " + DESTINATION % "에 왔다.\n")
-        
-    # 정상실행시에 준비되는 값 - phase0부터 시작함을 의미함
-    SYSTEM.RESULT = 1000
+    
 
 # 102 - 대화한다
 def COM102(MASTER:CM.Character):
@@ -52,6 +53,9 @@ def COM102(MASTER:CM.Character):
     if TARGET == None:
         SYSTEM.RESULT = 1002
         return
+    # 커맨드 정상실행
+    else:
+        SYSTEM.RESULT = 1000
     
     # EXP 증가
     MASTER.EXP[9][1] += 1
@@ -90,9 +94,6 @@ def COM102(MASTER:CM.Character):
             SYSTEM.setText(4, "미소를 지어준다...\n")
         else:
             SYSTEM.setText(4, "환한 미소를 만들고 있다...\n")
-    
-    # 정상실행시에 준비되는 값 - phase0부터 시작함을 의미함
-    SYSTEM.RESULT = 1000
 
 # 103 - 차를 탄다
 def COM103(CHARA:CM.Character):

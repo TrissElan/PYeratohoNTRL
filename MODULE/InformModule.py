@@ -77,10 +77,9 @@ def showParam(CHARA, area):
     MASTER = SYSTEM.CHARACTERS[SYSTEM.MASTER]
 
     # 이미지 출력
-    SYSTEM.DISPLAY.imgArea[area-1].delete("1.0", "end")
-    SYSTEM.DISPLAY.imgArea[area-1].image_create("1.0", image = CHARA.IMG)
-    SYSTEM.DISPLAY.imgArea[area-1].insert("end", f"\nHP [{SYSTEM.fstr(CHARA.PARAM[0][0][0],4)}/{SYSTEM.fstr(CHARA.PARAM[0][0][1],4)}]", "left")
-    SYSTEM.DISPLAY.imgArea[area-1].insert("end", f"\nMP [{SYSTEM.fstr(CHARA.PARAM[0][1][0],4)}/{SYSTEM.fstr(CHARA.PARAM[0][1][1],4)}]", "left")
+    SYSTEM.setImage(area, CHARA.IMG)
+    SYSTEM.addTextAfterImg(area, f"HP [{SYSTEM.fstr(CHARA.PARAM[0][0][0],4)}/{SYSTEM.fstr(CHARA.PARAM[0][0][1],4)}]")
+    SYSTEM.addTextAfterImg(area, f"HP [{SYSTEM.fstr(CHARA.PARAM[0][1][0],4)}/{SYSTEM.fstr(CHARA.PARAM[0][1][1],4)}]")
 
     # 기본정보 설정
     BaseInfo = "□ " + CHARA.NAME(index = 0) + f" (호감 : {CHARA.CFLAG[20][MASTER.NAME(index = 0)]} | 신뢰 : {CHARA.CFLAG[21][MASTER.NAME(index = 0)]} | 굴복 : {CHARA.CFLAG[22][MASTER.NAME(index = 0)]})\n"

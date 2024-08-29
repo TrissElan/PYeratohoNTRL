@@ -167,14 +167,35 @@ class System:
         fontWidth = font.nametofont(self.DISPLAY.textArea[index].cget("font")).measure("-")
         windowWidth = self.DISPLAY.textArea[index].winfo_width()
         self.setText(index, shape * (windowWidth // fontWidth - 1) + "\n")
+    
+    # 사진 영역
+    # - 사진 출력
+    def setImage(self, index, img):
+        self.DISPLAY.imgArea[index - 1].image_create(tk.END, image = img)
+    # - 텍스트 출력
+    def addTextAfterImg(self, index, msg, align='left'):
+        self.DISPLAY.imgArea[index - 1].insert("end", "\n" + msg, align)
+    # - 사진 제거
+    def delImageArea(self, index):
+        self.DISPLAY.imgArea[index - 1].delete("1.0", tk.END)
+    # - 사진 영역 클리어
+    def clearImgArea(self):
+        for imgArea in self.DISPLAY.imgArea:
+            imgArea.delete("1.0", tk.END)
 
-    # 텍스트 출력
+    # 텍스트 영역
+    # - 텍스트 출력
     def setText(self, index, msg, align='left'):
         self.DISPLAY.textArea[index].insert("end", msg, align)
 
-    # 텍스트 삭제
+    # - 텍스트 삭제
     def delText(self, index):
         self.DISPLAY.textArea[index].delete("1.0", tk.END)
+    
+    # - 텍스트 영역 클리어
+    def clearTextArea(self):
+        for textArea in self.DISPLAY.textArea:
+            textArea.delete("1.0", tk.END)
 
     # 텍스트 포맷팅
     def fstr(self, text, size):

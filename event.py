@@ -11,7 +11,7 @@ class Game:
         self.__current = 0
         self.commands = None
         SYSTEM.GFLAG[0] = 3
-        SYSTEM.delText(4)
+        # SYSTEM.delText(4)
         SYSTEM.after(self.phase0)
 
         # 정보출력을 위한 임시옵션 설정
@@ -39,19 +39,20 @@ class Game:
         MASTER:CM.Character = SYSTEM.CHARACTERS[SYSTEM.MASTER]
         CHARA:CM.Character = SYSTEM.CHARACTERS[self.current]
 
-        if MASTER.TARGET is not None:
-            return
-        else:
-            CHARA.TARGET = OTHER
-            if CHARA in MASTER.CFLAG[11].SPACE:
-                if OTHER.TARGET == None:
-                    msg = CHARA % "는 " +  OTHER % "에게 가까이 다가간다...\n"
-                elif OTHER.TARGET == CHARA:
-                    msg = CHARA % "는 자신에게 다가온 " + OTHER % "에게 시선을 돌렸다.\n"
-                else:
-                    msg = CHARA % "는 "  + OTHER.TARGET + "과 " + OTHER + " 사이에 끼어들었다!\n"
-                SYSTEM.setText(4, msg)
+        CHARA.TARGET = OTHER
+        if CHARA in MASTER.CFLAG[11].SPACE:
+            if OTHER.TARGET == None:
+                msg = CHARA % "는 " +  OTHER % "에게 가까이 다가간다...\n"
+            elif OTHER.TARGET == CHARA:
+                msg = CHARA % "는 자신에게 다가온 " + OTHER % "에게 시선을 돌렸다.\n"
+            else:
+                msg = CHARA % "는 "  + OTHER.TARGET % "과 " + OTHER % " 사이에 끼어들었다!\n"
+            SYSTEM.setText(4, msg)
+        if self.current == SYSTEM.MASTER:
             SYSTEM.delText(1)
+            SYSTEM.delImageArea(1)
+            SYSTEM.delText(2)
+            SYSTEM.delImageArea(2)
             IM.showParam(MASTER, 1)
             IM.showParam(OTHER, 2)
     
@@ -110,10 +111,15 @@ class Game:
         global SYSTEM
 
         # 최신정보 출력을 위해 기존 내역을 전부 제거함
+        SYSTEM.clearImgArea()
         SYSTEM.delText(0)
         SYSTEM.delText(1)
         SYSTEM.delText(2)
         SYSTEM.delText(3)
+        # SYSTEM.delText(4)
+        SYSTEM.delText(5)
+        # SYSTEM.delImageArea(1)
+        # SYSTEM.delImageArea(2)
 
         # 캐릭터와 캐릭터가 상호작용중인 대상 준비
         CHARA:CM.Character = SYSTEM.CHARACTERS[self.current]
