@@ -2,16 +2,17 @@ import MODULE.SystemModule as SM
 from collections import deque
 import re
 
+
 class Node:
-    def __init__(self, name, id = None, desc = ""):
+    def __init__(self, name, id=None, desc=""):
         self.ID = id
         self.__NAME = name
         self.SMELL = None
         self.STAIN = None
         self.LINK = []
         self.SPACE = []
-    
-    def NAME(self, after:str|None = None):
+
+    def NAME(self, after: str | None = None):
         if after is None:
             return self.__NAME
         else:
@@ -23,19 +24,21 @@ class Node:
             t_code = ord(self.__NAME[-1])
 
             # 판별결과를 기록함 - 받침의 유무를 기록함
-            hasFinal = not (t_code < min_code or t_code > max_code or (t_code - min_code) % 28 == 0)
+            hasFinal = not (
+                t_code < min_code or t_code > max_code or (t_code - min_code) % 28 == 0
+            )
 
             # 판별이 필요한 것인지 확인함
             if after not in "으로":
                 return self.__NAME + after
             else:
                 # 판별이 필요한 것이면 구별해서 자동 선택됨
-                return self.__NAME +  ("으로" if hasFinal else "로")
+                return self.__NAME + ("으로" if hasFinal else "로")
 
     def __str__(self):
         return f"{self.NAME} ({self.SMELL}, {self.STAIN})"
-    
-    def __mod__(self, msg:str = None):
+
+    def __mod__(self, msg: str = None):
         if msg[0] == "로":
             return self.NAME(msg[0]) + msg[1:]
         elif msg[:2] == "으로":
@@ -44,60 +47,59 @@ class Node:
             return self.NAME() + msg
 
 
-    
 def generateMap():
     # 외부 영역 / 6개 | // 10 == 0
     floorE = {
-        0 : Node("저택 정문", 0),
-        1 : Node("정원", 1),
-        2 : Node("홍 메이링의 방", 2),
-        3 : Node("외부 화장실", 3),
-        4 : Node("외부 창고", 4),
-        5 : Node("저택 뒷문", 5)
+        0: Node("저택 정문", 0),
+        1: Node("정원", 1),
+        2: Node("홍 메이링의 방", 2),
+        3: Node("외부 화장실", 3),
+        4: Node("외부 창고", 4),
+        5: Node("저택 뒷문", 5),
     }
 
     # 지하 영역 / 7개 | // 10 == 1
     floor0 = {
-        10 : Node("1/지하 계단", 10),
-        11 : Node("지하복도", 11),
-        12 : Node("감옥1", 12),
-        13 : Node("감옥2", 13),
-        14 : Node("플랑도르 개인실", 14),
-        15 : Node("탈의실", 15),
-        16 : Node("대욕탕", 16)
+        10: Node("1/지하 계단", 10),
+        11: Node("지하복도", 11),
+        12: Node("감옥1", 12),
+        13: Node("감옥2", 13),
+        14: Node("플랑도르 개인실", 14),
+        15: Node("탈의실", 15),
+        16: Node("대욕탕", 16),
     }
 
     # 1층 영역 / 9 + 중복1 | // 10 == 2
     floor1 = {
-        20 : Node("1층 복도", 20),
-        21 : Node("주방", 21),
-        22 : Node("식당", 22),
-        23 : Node("응접실", 23),
-        24 : Node("1층 화장실", 24),
-        25 : Node("도서관", 25),
+        20: Node("1층 복도", 20),
+        21: Node("주방", 21),
+        22: Node("식당", 22),
+        23: Node("응접실", 23),
+        24: Node("1층 화장실", 24),
+        25: Node("도서관", 25),
         26: Node("파츄리 개인실", 26),
-        27 : Node("소악마 개인실", 27),
-        28 : Node("1/2층계단", 28),
-        10 : floor0[10]
+        27: Node("소악마 개인실", 27),
+        28: Node("1/2층계단", 28),
+        10: floor0[10],
     }
 
     # 2층 영역 / 6 + 중복1 | // 10 == 3
     floor2 = {
-        30 : Node("2층 복도", 30),
-        31 : Node("아나타 개인실", 31),
-        32 : Node("사쿠야 개인실", 32),
-        33 : Node("2층 화장실", 33),
-        34 : Node("메이드 대기소", 34),
-        35 : Node("2/3층 계단", 35),
-        28 : floor1[28]
+        30: Node("2층 복도", 30),
+        31: Node("아나타 개인실", 31),
+        32: Node("사쿠야 개인실", 32),
+        33: Node("2층 화장실", 33),
+        34: Node("메이드 대기소", 34),
+        35: Node("2/3층 계단", 35),
+        28: floor1[28],
     }
     # 3층 영역 / 2 + 중복1 | // 10 == 4
     floor3 = {
-        40 : Node("레밀리아 개인실", 40),
-        41 : Node("발코니", 41),
-        35 : floor2[35],
+        40: Node("레밀리아 개인실", 40),
+        41: Node("발코니", 41),
+        35: floor2[35],
     }
-    
+
     # 외부영역 맵핑
     floorE[0].LINK = [floorE[1], floorE[2], floorE[3]]
     floorE[1].LINK = [floorE[0], floorE[2], floorE[3], floor1[20]]
@@ -114,9 +116,18 @@ def generateMap():
     floor0[14].LINK = [floor0[11]]
     floor0[15].LINK = [floor0[11], floor0[16]]
     floor0[16].LINK = [floor0[15]]
-    
+
     # 1층 맵핑
-    floor1[20].LINK = [floor1[23], floor1[24], floor1[22], floor1[21], floor1[25],floor1[28],floor1[10], floorE[1]]
+    floor1[20].LINK = [
+        floor1[23],
+        floor1[24],
+        floor1[22],
+        floor1[21],
+        floor1[25],
+        floor1[28],
+        floor1[10],
+        floorE[1],
+    ]
     floor1[21].LINK = [floorE[5], floor1[20], floor1[22]]
     floor1[22].LINK = [floor1[21], floor1[20]]
     floor1[23].LINK = [floor1[24], floor1[20]]
@@ -127,7 +138,14 @@ def generateMap():
     floor1[28].LINK = [floor1[20], floor2[30]]
 
     # 2층 맵핑
-    floor2[30].LINK = [floor2[31], floor2[32], floor2[33], floor2[34],floor2[28], floor2[35]]
+    floor2[30].LINK = [
+        floor2[31],
+        floor2[32],
+        floor2[33],
+        floor2[34],
+        floor2[28],
+        floor2[35],
+    ]
     floor2[31].LINK = [floor2[30]]
     floor2[32].LINK = [floor2[30]]
     floor2[33].LINK = [floor2[30]]
@@ -147,7 +165,8 @@ def generateMap():
     mapList.update(floor3)
     return mapList
 
-def getRoute(start_node:Node, goal_node:Node):
+
+def getRoute(start_node: Node, goal_node: Node):
     queue = deque([[start_node]])  # 큐에 시작 노드 객체로 초기화
     visited = set()
     while queue:
@@ -155,7 +174,7 @@ def getRoute(start_node:Node, goal_node:Node):
         node = path[-1]
         if node == goal_node:
             route = [n for n in path]  # 경로의 노드 이름을 리스트로 반환
-            route.reverse() 
+            route.reverse()
             return route
         if node not in visited:
             visited.add(node)
@@ -166,7 +185,8 @@ def getRoute(start_node:Node, goal_node:Node):
                     queue.append(new_path)
     return None  # 경로를 찾지 못했을 경우
 
-def showMap(currentLocation:int):
+
+def showMap(currentLocation: int):
     SYSTEM = SM.System()
     SYSTEM.delText(3)
     # 계단에서 이동할 때 현재 문제가 있는데, 해당 층에서 벗어날 방법이 없다는 것
@@ -235,24 +255,24 @@ def showMap(currentLocation:int):
 ■□14□■□□□□■
 ■□□□■□□□□■
 ■■■■■■■■■■"""
-    
+
     SYSTEM.setText(3, mapData)
-    
+
     lines = mapData.split("\n")
-    SYSTEM.DISPLAY.textArea[3].tag_config('gray', foreground='gray')
+    SYSTEM.DISPLAY.textArea[3].tag_config("gray", foreground="gray")
     for i, line in enumerate(lines):
         start = 0
         while start != -1:
-            start = line.find('□', start)
+            start = line.find("□", start)
             if start != -1:
                 start_index = f"{i+1}.{start}"
                 end_index = f"{i+1}.{start+1}"
-                SYSTEM.DISPLAY.textArea[3].tag_add('gray', start_index, end_index)
+                SYSTEM.DISPLAY.textArea[3].tag_add("gray", start_index, end_index)
                 start += 1
 
     lines = mapData.split("\n")
     locations = {}
-    pattern = re.compile(r'\d\d')
+    pattern = re.compile(r"\d\d")
     for indeY, line in enumerate(lines):
         for match in re.finditer(pattern, line):
             locations[match.group()] = (indeY + 1, match.start())
@@ -263,10 +283,15 @@ def showMap(currentLocation:int):
         start_index = f"{row}.{col}"
         end_index = f"{row}.{col+2}"
         SYSTEM.DISPLAY.textArea[3].tag_add(loc, start_index, end_index)
-        SYSTEM.DISPLAY.textArea[3].tag_bind(loc, "<Enter>", lambda e, tag=loc: SM.on_enter(e, tag))
-        SYSTEM.DISPLAY.textArea[3].tag_bind(loc, "<Leave>", lambda e, tag=loc: SM.on_leave(e, tag))
+        SYSTEM.DISPLAY.textArea[3].tag_bind(
+            loc, "<Enter>", lambda e, tag=loc: SM.on_enter(e, tag)
+        )
+        SYSTEM.DISPLAY.textArea[3].tag_bind(
+            loc, "<Leave>", lambda e, tag=loc: SM.on_leave(e, tag)
+        )
         if int(loc) in SYSTEM.MAP:
             SYSTEM.DISPLAY.textArea[3].tag_bind(
-                loc, "<Button-1>", 
-                    lambda e, chara = 0, dest = SYSTEM.MAP[int(loc)]: print(chara, dest.NAME)
-                )
+                loc,
+                "<Button-1>",
+                lambda e, chara=0, dest=SYSTEM.MAP[int(loc)]: print(chara, dest.NAME),
+            )

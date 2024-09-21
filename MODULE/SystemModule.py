@@ -38,7 +38,6 @@ class System:
         self.__initialize()
 
     def __initialize(self):
-
         with open("./DATA/VARSIZE.csv", "r", encoding="utf-8") as csvFile:
             result = read(csvFile)
             self.VARSIZE = {row[0]:int(row[1]) for row in result if row != []}
@@ -145,8 +144,7 @@ class System:
     
     @property
     def timeInfo(self):
-        return self.__format.format(self.TIME // 518400, self.TIME % 518400 // 43200 + 1, self.TIME % 43200 // 1440 + 1, self.TIME % 1440 // 60, self.TIME % 60)
-    
+        return self.__format.format(self.TIME // 518400, self.TIME % 518400 // 43200 + 1, self.TIME % 43200 // 1440 + 1, self.TIME % 1440 // 60, self.TIME % 60)  
     @property
     def RESULT(self)->int:
         return self._RESULT.get()
@@ -161,7 +159,7 @@ class System:
         else:
             return f"{self.__EXPNAME1[index1]}({self.__EXPNAME2[self.__EXPNAME1[index1]][index2]})"
         
-    # 텍스트와 관련된 메서드
+    # 출력과 관련된 메서드
     # 줄 긋기
     def drawLine(self, index, shape):
         fontWidth = font.nametofont(self.DISPLAY.textArea[index].cget("font")).measure("-")
@@ -187,17 +185,14 @@ class System:
     # - 텍스트 출력
     def setText(self, index, msg, align='left'):
         self.DISPLAY.textArea[index].insert("end", msg, align)
-
     # - 텍스트 삭제
     def delText(self, index):
-        self.DISPLAY.textArea[index].delete("1.0", tk.END)
-    
+        self.DISPLAY.textArea[index].delete("1.0", tk.END)   
     # - 텍스트 영역 클리어
     def clearTextArea(self):
         for textArea in self.DISPLAY.textArea:
             textArea.delete("1.0", tk.END)
-
-    # 텍스트 포맷팅
+    # - 텍스트 포맷팅
     def fstr(self, text, size):
         text = str(text)
         width = 0
