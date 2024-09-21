@@ -42,13 +42,11 @@
 
 ================================================================= ENVIRONMENT
 
-HW : Rog Ally X (24GB RAM + 1TB SSD) + BT Keyboard + BT Mouse + 16inch Portable Monitor
+HW : Adreamer WinsPad20 Only (N4120 / 8GB RAM / 128GB EMMC)
 
-OS : Windows 11 Pro 23H2 Latest
+OS : Windows 10 21H2
 
-EN : Visual Studio Code Latest + Latest Python(3.12.4) Only
-
-No Additional Module need yet
+EN : Visual Studio Code Latest + Latest Python(3.12.6)(pillow module needed)
 
 ================================================================= Progress
 
