@@ -186,7 +186,7 @@ class Game:
         if RESULT == 1000:
             SYSTEM.after(self.phase0)
             self.current += 1
-        if RESULT == 1001:
+        elif RESULT == 1001:
             SYSTEM.after(self.phase1)
         elif RESULT == 1002:
             SYSTEM.after(self.phase2)
