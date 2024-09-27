@@ -183,6 +183,9 @@ class Game:
     def phase4(self):
         global SYSTEM
         RESULT = SYSTEM.RESULT
+        if RESULT == 1000:
+            SYSTEM.after(self.phase0)
+            self.current += 1
         if RESULT == 1001:
             SYSTEM.after(self.phase1)
         elif RESULT == 1002:
@@ -192,8 +195,7 @@ class Game:
         elif RESULT == 1004:
             SYSTEM.after(self.phase4)
         else:
-            SYSTEM.after(self.phase0)
-            self.current += 1
+            raise Exception("RESULT : " + str(RESULT))
 
 
 def simulation():
