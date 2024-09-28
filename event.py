@@ -41,7 +41,7 @@ class Game:
         CHARA: CM.Character = SYSTEM.CHARACTERS[self.current]
 
         CHARA.TARGET = OTHER
-        if CHARA in MASTER.CFLAG[11].SPACE:
+        if CHARA in MASTER.currL.space:
             if OTHER.TARGET == None:
                 msg = CHARA % "는 " + OTHER % "에게 가까이 다가간다...\n"
             elif OTHER.TARGET == CHARA:
@@ -64,9 +64,9 @@ class Game:
     def current_info(self):
         global SYSTEM
         CHARA: CM.Character = SYSTEM.CHARACTERS[self.current]
-        PLACE: MM.Node = CHARA.CFLAG[11]
+        PLACE: MM.Node = CHARA.currL
 
-        target_list = [target for target in PLACE.SPACE if target != CHARA]
+        target_list = [target for target in PLACE.space if target != CHARA]
         target_text = " | ".join(target.NAME() for target in target_list)
 
         SYSTEM.setText(
@@ -105,13 +105,13 @@ class Game:
 
         # 대상의 존재여부 확인 / 같은 방에 있어야만 선택된 상태로 유지됨
         if CHARA.TARGET != None:
-            if CHARA.TARGET not in CHARA.CFLAG[11].SPACE:
+            if CHARA.TARGET not in CHARA.currL.space:
                 CHARA.TARGET = None
 
         # 대상이 없을 경우 대상을 선택함 / 현재는 33.3% 확률로 선정함
-        if CHARA != MASTER and CHARA.TARGET == None and len(CHARA.CFLAG[11].SPACE) > 1:
+        if CHARA != MASTER and CHARA.TARGET == None and len(CHARA.currL.space) > 1:
             RESULT = SYSTEM.RANDOM(3)
-            targets = [chara for chara in CHARA.CFLAG[11].SPACE if chara != CHARA]
+            targets = [chara for chara in CHARA.currL.space if chara != CHARA]
             if RESULT == 1:
                 self.select_target(SYSTEM.CHOICE(targets))
 
@@ -151,7 +151,7 @@ class Game:
             IM.showParam(CHARA.TARGET, 2)
 
         # 3번 텍스트 위젯 - 지도 출력
-        MM.showMap(CHARA.CFLAG[11].ID)
+        MM.showMap(CHARA.currL.ID)
 
         SYSTEM.after(self.phase2)
 

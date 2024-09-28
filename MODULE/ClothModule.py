@@ -24,8 +24,8 @@ def setCloth(CHARA, index, CLOTHLIST):
 class Cloth:
     def __init__(self, chara, **clothList):
         self.OWNER = chara
-        self.STAIN = "깨끗한"
-        self.SMELL = f"{chara.NAME()} + 의 체취"
+        self.stain = "깨끗한"
+        self.smell = f"{chara.NAME()} + 의 체취"
         self.__MOVABLE = clothList["shiftable"]  # 젓힐 수 있는지 여부
         self.STATUS = False  # 상태 / True이면 젓힌 상태
         self.CATEGORY = clothList["category"]  # 부위 인식용 카테고리번호

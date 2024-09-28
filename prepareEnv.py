@@ -34,8 +34,8 @@ class PrepareEnvironments:
         # 캐릭터를 지정한 위치에 배치
         if SYSTEM.CHARACTERS != None:
             for CHARA in SYSTEM.CHARACTERS:
-                CHARA.CFLAG[11] = SYSTEM.MAP[CHARA.CFLAG[10]]
-                CHARA.CFLAG[11].SPACE.append(CHARA)
+                CHARA.currL = SYSTEM.MAP[CHARA.CFLAG[10]]
+                CHARA.currL.space.append(CHARA)
 
         # 기반설정 - 캐릭터 복장 설정
         if SYSTEM.CHARACTERS != None:

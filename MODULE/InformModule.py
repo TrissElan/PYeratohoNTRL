@@ -82,7 +82,7 @@ def showParam(CHARA, area):
     SYSTEM.addTextAfterImg(area, f"HP [{SYSTEM.fstr(CHARA.PARAM[0][1][0],4)}/{SYSTEM.fstr(CHARA.PARAM[0][1][1],4)}]")
 
     # 기본정보 설정
-    BaseInfo = "□ " + CHARA.NAME(index = 0) + f" (호감 : {CHARA.CFLAG[20][MASTER.NAME(index = 0)]} | 신뢰 : {CHARA.CFLAG[21][MASTER.NAME(index = 0)]} | 굴복 : {CHARA.CFLAG[22][MASTER.NAME(index = 0)]})\n"
+    BaseInfo = "□ " + CHARA.NAME(index = 0) + f" (호감 : {CHARA.attra[MASTER.NAME(index = 0)]} | 신뢰 : {CHARA.trust[MASTER.NAME(index = 0)]} | 굴복 : {CHARA.submi[MASTER.NAME(index = 0)]})\n"
     
     # 추가정보1
     AddInfo1 = ""
@@ -116,12 +116,12 @@ def showParam(CHARA, area):
     AddInfo2 = "□ 발기상태\n"
     # - 남성이나 후타나리이면 클리가 아닌 자지로 출력됨
     if SYSTEM.GFLAG[105]:
-        AddInfo2 += f"{"자지" if CHARA.TALENT[0] >= 1 else "클리"}: [{BASELV(CHARA.PARAM[2][0][0])}] | 유두: [{BASELV(CHARA.PARAM[2][1][0])}]\n"
+        AddInfo2 += f"{"자지" if CHARA.TALENT[0] >= 1 else "클리"}: [{BASELV(CHARA.part[0].current)}] | 유두: [{BASELV(CHARA.part[1].current)}]\n"
 
     # 추가정보3 - 누적 쾌감
     AddInfo3 = "□ 누적쾌감\n"
     # - 남성 및 후타나리는 P로 바꿔서 표현하고 여성은 C로 표현함
-    AddInfo3 += f"{"P" if CHARA.TALENT[0] >= 1 else "C"}: {PARAMLV(CHARA.PARAM[3][0])} | "
+    AddInfo3 += f"{"P" if CHARA.TALENT[0] >= 1 else "C"}: {PARAMLV(CHARA.plsr[0])} | "
     # - 여성 및 후타나리는 보지가 있음
     if CHARA.TALENT[0] != 1:
         AddInfo3 += f"V: {PARAMLV(CHARA.PARAM[3][1])} | "

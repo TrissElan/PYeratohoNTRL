@@ -1,7 +1,9 @@
 from json import load
 from csv import reader as read
 from PIL import Image, ImageTk
+from MapModule import Node
 from collections import defaultdict
+from typing import Dict
 
 
 def setValue(target: list | dict, source: dict):
@@ -15,6 +17,81 @@ def getList(value: any, size: int, source: dict = None):
         setValue(lst, source)
     return lst
 
+class CurrentAndMax:
+    def __init__(self, max):
+        self.__current = 0
+        self.__max = max
+    @property
+    def current(self):
+        return self.__current
+    @current.setter
+    def current(self, value):
+        self.__current = value
+        if self.__current > self.__max:
+            self.__current = self.__max
+        if self.__current < 0:
+            self.__current = 0
+
+class Plsr:
+    def __init__(self, gender):
+        object.__setattr__(self, '__index', ["c", "a", "b", "m", "v", "w"])
+        object.__setattr__(self, '__plsr', {
+            "c": 0,
+            "a": 0,
+            "b": 0,
+            "m": 0,
+            "v": 0,
+            "w": 0
+        })
+
+    def __getitem__(self, index):
+        return self.__plsr[self.__index[index]]
+
+    def __setitem__(self, index, value):
+        self.__plsr[self.__index[index]] = value
+
+    def __getattr__(self, name):
+        if name in self.__plsr:
+            return self.__plsr[name]
+        raise AttributeError(f"'Plsr' object has no attribute '{name}'")
+
+    def __setattr__(self, name, value):
+        if name in self.__plsr:
+            self.__plsr[name] = value
+        else:
+            object.__setattr__(self, name, value)
+
+class Part:
+    def __init__(self):
+        object.__setattr__(self, '__index', ["c", "a", "b", "v", "w"])
+        object.__setattr__(self, '__part', {
+            "c": CurrentAndMax(1000),
+            "a": CurrentAndMax(1000),
+            "b": CurrentAndMax(1000),
+            "v": CurrentAndMax(1000),
+            "w": CurrentAndMax(1000)
+        })
+
+    def __getitem__(self, index):
+        return self.__part[self.__index[index]]
+
+    def __setitem__(self, index, value):
+        self.__part[self.__index[index]] = value
+
+    def __getattr__(self, name):
+        if name in self.__part:
+            return self.__part[name]
+        raise AttributeError(f"'Part' object has no attribute '{name}'")
+
+    def __setattr__(self, name, value):
+        if name in self.__part:
+            self.__part[name] = value
+        else:
+            object.__setattr__(self, name, value)
+
+
+        
+    
 
 class Character:
     def __init__(self, id, VARSIZE):
@@ -96,15 +173,27 @@ class Character:
         # STAIN을 추가해서 흔적이 남도록 만들어줘야 함
 
         # 위치 관리를 위한 변수
-        self.CFLAG[12] = None
-        self._route = []
+        self.currL: Node = None  # CFLAG[11] - 현재위치
+        self.pastL: Node = None  # CFLAG[12] - 이전위치
+        self.route: list[Node] = []
 
-        # 호감도를 관리하기 위한 변수
-        self.CFLAG[20] = defaultdict(int)
-        # 신뢰도를 관리하기 위한 변수
-        self.CFLAG[21] = defaultdict(int)
-        # 굴복도를 관리하기 위한 변수
-        self.CFLAG[22] = defaultdict(int)
+        # 관계를 기록하는 변수
+        # - defaultdict에 캐릭터 이름(문자열)로 직접 접근하여 사용
+        self.attr = defaultdict(int) # 호감도 : 양수는 호의 / 음수는 적의
+        self.trst = defaultdict(int) # 신뢰도 : 양수는 신뢰 / 음수는 불신
+        self.subm = defaultdict(int) # 굴복도 : 양수는 순응 / 음수는 반항
+
+        # 감정을 기록하는 변수
+        # - defaultdict에 캐릭터 이름(문자열)로 직접 접근하여 사용 / 어느 감정에 변화를 주는지 인덱스로 지정함
+        self.mood:Dict[str, list[int]] = defaultdict(lambda:[0 for i in range(5)])
+
+        # 쾌감을 기록하는 변수 - 0:C, 1:A, 2:B, 3:M, 4:V, 5:W
+        # - 클래스를 따로 준비해서 생성된 객체의 메서드를 활용하도록 분리하여 설계됨
+        self.plsr:Plsr = Plsr()
+
+        # 부위를 관리하는 변수 - 0:C, 1:A, 2:B, 3:V, 4:W
+        # - 클래스를 따로 준비해서 생성된 객체의 메서드를 활용하도록 분리하여 설계됨
+        self.part:Part = Part()
 
         # 부가된 명령을 수행하는데 걸리는 소요시간을 기록하는 변수
         self.remainTime = 0
@@ -198,49 +287,6 @@ class Character:
             if param[0] is not None:
                 if param[0] < 0:
                     param[0] = 0
-
-    # updateBASE3 메서드 : 발기와 관련된 수치를 반영하기 위한 메서드
-    # - 호출할 때는 updateBASE1과 동일한 방식으로 호출함
-    def updateBASE3(self, SIZE1=0, SIZE2=0):
-        self.PARAM[2][0][0] += SIZE1  # 자지 / 클리 발기
-        self.PARAM[2][1][0] += SIZE2  # 유두 발기
-
-        # 현재치가 최대치를 초과했을 경우 최대치로 변경함
-        for param in self.PARAM[2]:
-            if param[0] is not None:
-                if param[0] > param[1]:
-                    param[0] = param[1]
-        # 현재치가 최소치(0) 미만일 경우 최소치로 변경함
-        for param in self.PARAM[2]:
-            if param[0] is not None:
-                if param[0] < 0:
-                    param[0] = 0
-
-    # updatePlsr : 쾌감수치를 반영하기 위한 메서드
-    # - 호출할 때는 updateBASE1과 동일한 방식으로 호출함
-    # - 절정처리는 이벤트가 트리거되면 이루어지며, 일정수치만큼 감소시킴
-    # - 이벤트가 트리거가 안되면 누적후 자연감소로 이어지며 자연감소량에 따라 성욕이 올라가도록 설계하자
-    def updatePLSR(self, C=0, V=0, A=0, B=0, M=0, W=0):
-        self.PARAM[3][0] += C
-        if self.TALENT[0] != 1:
-            self.PARAM[3][1] += V
-        self.PARAM[3][2] += A
-        self.PARAM[3][3] += B
-        self.PARAM[3][4] += M
-        if self.TALENT[0] != 1:
-            self.PARAM[3][5] += W
-        for i in range(len(self.PARAM[3])):
-            if self.PARAM[3][i] is not None and self.PARAM[3][i] < 0:
-                self.PARAM[3][i] = 0
-
-    # updateMood : 지정된 캐릭터에 대한 감정을 반영하기 위한 메서드
-    def updateMOOD(self, otherName, i0=0, i1=0, i2=0, i3=0, i4=0):
-        self.PARAM[4][otherName][0] += i0
-        self.PARAM[4][otherName][1] += i1
-        self.PARAM[4][otherName][2] += i2
-        self.PARAM[4][otherName][3] += i3
-        self.PARAM[4][otherName][4] += i4
-
 
 # 게임 내에서 등장하는 캐릭터 목록을 준비하는 함수
 def prepareCharacters(VARSIZE):

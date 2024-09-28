@@ -6,22 +6,22 @@ import re
 class Node:
     def __init__(self, name, id=None, desc=""):
         self.ID = id
-        self.__NAME = name
-        self.SMELL = None
-        self.STAIN = None
-        self.LINK = []
-        self.SPACE = []
+        self.__name = name
+        self.smell = None
+        self.stain = None
+        self.link = []
+        self.space = []
 
     def NAME(self, after: str | None = None):
         if after is None:
-            return self.__NAME
+            return self.__name
         else:
             # 한글 유니코드 범위: 0xAC00 ~ 0xD7A3
             min_code = 0xAC00
             max_code = 0xD7A3
 
             # 별명의 마지막 글자의 코드값 취득
-            t_code = ord(self.__NAME[-1])
+            t_code = ord(self.__name[-1])
 
             # 판별결과를 기록함 - 받침의 유무를 기록함
             hasFinal = not (
@@ -30,13 +30,13 @@ class Node:
 
             # 판별이 필요한 것인지 확인함
             if after not in "으로":
-                return self.__NAME + after
+                return self.__name + after
             else:
                 # 판별이 필요한 것이면 구별해서 자동 선택됨
-                return self.__NAME + ("으로" if hasFinal else "로")
+                return self.__name + ("으로" if hasFinal else "로")
 
     def __str__(self):
-        return f"{self.NAME} ({self.SMELL}, {self.STAIN})"
+        return f"{self.NAME} ({self.smell}, {self.stain})"
 
     def __mod__(self, msg: str = None):
         if msg[0] == "로":
@@ -101,24 +101,24 @@ def generateMap():
     }
 
     # 외부영역 맵핑
-    floorE[0].LINK = [floorE[1], floorE[2], floorE[3]]
-    floorE[1].LINK = [floorE[0], floorE[2], floorE[3], floor1[20]]
-    floorE[2].LINK = [floorE[0], floorE[1], floorE[5]]
-    floorE[3].LINK = [floorE[0], floorE[4], floorE[1]]
-    floorE[4].LINK = [floorE[3], floorE[5]]
-    floorE[5].LINK = [floorE[2], floorE[4], floor1[21]]
+    floorE[0].link = [floorE[1], floorE[2], floorE[3]]
+    floorE[1].link = [floorE[0], floorE[2], floorE[3], floor1[20]]
+    floorE[2].link = [floorE[0], floorE[1], floorE[5]]
+    floorE[3].link = [floorE[0], floorE[4], floorE[1]]
+    floorE[4].link = [floorE[3], floorE[5]]
+    floorE[5].link = [floorE[2], floorE[4], floor1[21]]
 
     # 지하 맵핑
-    floor0[10].LINK = [floor1[20], floor0[11]]
-    floor0[11].LINK = [floor0[10], floor0[12], floor0[13], floor0[14], floor0[15]]
-    floor0[12].LINK = [floor0[11]]
-    floor0[13].LINK = [floor0[11]]
-    floor0[14].LINK = [floor0[11]]
-    floor0[15].LINK = [floor0[11], floor0[16]]
-    floor0[16].LINK = [floor0[15]]
+    floor0[10].link = [floor1[20], floor0[11]]
+    floor0[11].link = [floor0[10], floor0[12], floor0[13], floor0[14], floor0[15]]
+    floor0[12].link = [floor0[11]]
+    floor0[13].link = [floor0[11]]
+    floor0[14].link = [floor0[11]]
+    floor0[15].link = [floor0[11], floor0[16]]
+    floor0[16].link = [floor0[15]]
 
     # 1층 맵핑
-    floor1[20].LINK = [
+    floor1[20].link = [
         floor1[23],
         floor1[24],
         floor1[22],
@@ -128,17 +128,17 @@ def generateMap():
         floor1[10],
         floorE[1],
     ]
-    floor1[21].LINK = [floorE[5], floor1[20], floor1[22]]
-    floor1[22].LINK = [floor1[21], floor1[20]]
-    floor1[23].LINK = [floor1[24], floor1[20]]
-    floor1[24].LINK = [floor1[23], floor1[20]]
-    floor1[25].LINK = [floor1[20], floor1[26], floor1[27]]
-    floor1[26].LINK = [floor1[25]]
-    floor1[27].LINK = [floor1[25]]
-    floor1[28].LINK = [floor1[20], floor2[30]]
+    floor1[21].link = [floorE[5], floor1[20], floor1[22]]
+    floor1[22].link = [floor1[21], floor1[20]]
+    floor1[23].link = [floor1[24], floor1[20]]
+    floor1[24].link = [floor1[23], floor1[20]]
+    floor1[25].link = [floor1[20], floor1[26], floor1[27]]
+    floor1[26].link = [floor1[25]]
+    floor1[27].link = [floor1[25]]
+    floor1[28].link = [floor1[20], floor2[30]]
 
     # 2층 맵핑
-    floor2[30].LINK = [
+    floor2[30].link = [
         floor2[31],
         floor2[32],
         floor2[33],
@@ -146,15 +146,15 @@ def generateMap():
         floor2[28],
         floor2[35],
     ]
-    floor2[31].LINK = [floor2[30]]
-    floor2[32].LINK = [floor2[30]]
-    floor2[33].LINK = [floor2[30]]
-    floor2[34].LINK = [floor2[30]]
-    floor2[35].LINK = [floor2[30], floor3[40]]
+    floor2[31].link = [floor2[30]]
+    floor2[32].link = [floor2[30]]
+    floor2[33].link = [floor2[30]]
+    floor2[34].link = [floor2[30]]
+    floor2[35].link = [floor2[30], floor3[40]]
 
     # 3층 맵핑
-    floor3[40].LINK = [floor3[35], floor3[41]]
-    floor3[41].LINK = [floor3[40]]
+    floor3[40].link = [floor3[35], floor3[41]]
+    floor3[41].link = [floor3[40]]
 
     # 랜덤으로 찍어서 이동하기 위한 목록 준비
     mapList = {}
@@ -178,7 +178,7 @@ def getRoute(start_node: Node, goal_node: Node):
             return route
         if node not in visited:
             visited.add(node)
-            for linked_node in node.LINK:
+            for linked_node in node.link:
                 if linked_node not in visited:
                     new_path = list(path)
                     new_path.append(linked_node)
