@@ -1,11 +1,3 @@
-TITLE,era홍마관NTRL
-VERSION,0.0.1
-SIZE,1200x800
-RESIZEH,0
-RESIZEW,0
-FONTNAME,굴림체
-FONTSIZE,12
-FONTWEIGHT,normal
 ANOUNCE,era홍마관NTRL
 ANOUNCE,python 및 tkinter를 통해 개발된 2차창작게임이며
 ANOUNCE,erakanon 및 era홍마관NTRproto0.040 및 eratohoTW를 기반으로 제작되었습니다.

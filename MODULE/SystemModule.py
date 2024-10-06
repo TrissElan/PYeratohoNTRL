@@ -38,19 +38,14 @@ class System:
         self.__initialize()
 
     def __initialize(self):
+        with open("./DATA/setting1.json", "r", encoding="utf-8") as file:
+            self.setting1 = load(file)
+        with open("./DATA/setting2.json", "r", encoding="utf-8") as file:
+            self.setting2 = load(file)
+
         with open("./DATA/VARSIZE.csv", "r", encoding="utf-8") as csvFile:
             result = read(csvFile)
             self.VARSIZE = {row[0]:int(row[1]) for row in result if row != []}
-
-        with open("./DATA/SETTING.csv", "r", encoding="utf-8") as csvFile:
-            result = read(csvFile)
-            self.SETTING = {}
-            for row in result:
-                if row[0] not in self.SETTING:
-                    self.SETTING[row[0]] = row[1]
-                else:
-                    self.SETTING[row[0]] += "\n" + row[1]
-            self.SETTING["ANOUNCE"] += "\n"
 
         # 경험치 명칭 DB 생성
         with open("./DATA/EXP.csv", "r", encoding="utf-8") as csvFile:
@@ -129,10 +124,10 @@ class System:
         self.MAP:dict = None
         self.TIME = 0
         self.GFLAG = [0 for i in range(self.VARSIZE["GFLAG"])]
-        self.__format = "{}%s {}%s {}%s {}%s {}%s"%(self.SETTING['YEAR'], self.SETTING['MONTH'], self.SETTING['DAY'], self.SETTING['HOUR'], self.SETTING['MIN'])
+        self.__format = "{}%s {}%s {}%s {}%s {}%s"%(self.setting2["format"][0], self.setting2["format"][1], self.setting2["format"][2], self.setting2["format"][3], self.setting2["format"][4])
 
-        # 게임 시스템 관리를 위한 기믹 / 변수들
-        self.DISPLAY = DM.Display(self.SETTING)
+        # UI 셋업
+        self.DISPLAY = DM.Display(self.setting1)
 
         # 구상출력영역은 실제 게임에 접속한 이후부터 우클릭을 통한 출력내용 제거가 가능함 / 그 외에는 불가능함
         self.DISPLAY.textArea[4].bind("<Button-3>", lambda e: self.delText(4) if self.GFLAG[0] == 3 else None)
@@ -161,10 +156,10 @@ class System:
         
     # 출력과 관련된 메서드
     # 줄 긋기
-    def drawLine(self, index, shape):
+    def drawLine(self, shape, index = 4):
         fontWidth = font.nametofont(self.DISPLAY.textArea[index].cget("font")).measure("-")
         windowWidth = self.DISPLAY.textArea[index].winfo_width()
-        self.setText(index, shape * (windowWidth // fontWidth - 1) + "\n")
+        self.setText(shape * (windowWidth // fontWidth - 1) + "\n", index)
     
     # 사진 영역
     # - 사진 출력
@@ -183,7 +178,7 @@ class System:
 
     # 텍스트 영역
     # - 텍스트 출력
-    def setText(self, index, msg, align='left'):
+    def setText(self, msg, align='left', index = 4):
         self.DISPLAY.textArea[index].insert("end", msg, align)
     # - 텍스트 삭제
     def delText(self, index):
@@ -219,7 +214,7 @@ class System:
         if current_text[-1] != "\n":
             current_text += "\n"
         
-        self.setText(5, current_text, align)
+        self.setText(current_text, align, 5)
             
         
         # 출력된 커맨드에 대한 태그 부여 시작

@@ -2,8 +2,8 @@ from json import load
 from csv import reader as read
 from PIL import Image, ImageTk
 from MapModule import Node
-from collections import defaultdict
-from typing import Dict
+from collections import defaultdict, namedtuple
+from typing import Dict, Optional
 
 
 def setValue(target: list | dict, source: dict):
@@ -17,81 +17,176 @@ def getList(value: any, size: int, source: dict = None):
         setValue(lst, source)
     return lst
 
-class CurrentAndMax:
-    def __init__(self, max):
-        self.__current = 0
+
+class IntergratedVariable:
+    def __init__(
+        self, data: int = 0, min: Optional[int] = None, max: Optional[int] = None
+    ):
+        self.__data = data
         self.__max = max
-    @property
-    def current(self):
-        return self.__current
-    @current.setter
-    def current(self, value):
-        self.__current = value
-        if self.__current > self.__max:
-            self.__current = self.__max
-        if self.__current < 0:
-            self.__current = 0
+        self.__min = min
 
-class Plsr:
-    def __init__(self, gender):
-        object.__setattr__(self, '__index', ["c", "a", "b", "m", "v", "w"])
-        object.__setattr__(self, '__plsr', {
-            "c": 0,
-            "a": 0,
-            "b": 0,
-            "m": 0,
-            "v": 0,
-            "w": 0
-        })
+    def adjust(self):
+        if self.__max is not None and self.__data > self.__max:
+            self.__data = self.__max
+        if self.__min is not None and self.__data < self.__min:
+            self.__data = self.__min
 
-    def __getitem__(self, index):
-        return self.__plsr[self.__index[index]]
+    def checkType(self, other):
+        if not isinstance(other, int):
+            raise TypeError("Only Integer Granted")
 
-    def __setitem__(self, index, value):
-        self.__plsr[self.__index[index]] = value
-
-    def __getattr__(self, name):
-        if name in self.__plsr:
-            return self.__plsr[name]
-        raise AttributeError(f"'Plsr' object has no attribute '{name}'")
-
-    def __setattr__(self, name, value):
-        if name in self.__plsr:
-            self.__plsr[name] = value
+    def __add__(self, other):
+        if self.__data is None:
+            return self
         else:
-            object.__setattr__(self, name, value)
+            self.checkType(other)
+            return self.__data + other
 
-class Part:
-    def __init__(self):
-        object.__setattr__(self, '__index', ["c", "a", "b", "v", "w"])
-        object.__setattr__(self, '__part', {
-            "c": CurrentAndMax(1000),
-            "a": CurrentAndMax(1000),
-            "b": CurrentAndMax(1000),
-            "v": CurrentAndMax(1000),
-            "w": CurrentAndMax(1000)
-        })
-
-    def __getitem__(self, index):
-        return self.__part[self.__index[index]]
-
-    def __setitem__(self, index, value):
-        self.__part[self.__index[index]] = value
-
-    def __getattr__(self, name):
-        if name in self.__part:
-            return self.__part[name]
-        raise AttributeError(f"'Part' object has no attribute '{name}'")
-
-    def __setattr__(self, name, value):
-        if name in self.__part:
-            self.__part[name] = value
+    def __radd__(self, other):
+        if self.__data is None:
+            return other
         else:
-            object.__setattr__(self, name, value)
+            self.checkType(other)
+            return other + self.__data
 
+    def __sub__(self, other):
+        if self.__data is None:
+            return self
+        else:
+            self.checkType(other)
+            return self.__data - other
 
-        
+    def __rsub__(self, other):
+        if self.__data is None:
+            return other
+        else:
+            self.checkType(other)
+            return other - self.__data
+
+    def __mul__(self, other):
+        if self.__data is None:
+            return self
+        else:
+            self.checkType(other)
+            return self.__data * other
+
+    def __rmul__(self, other):
+        if self.__data is None:
+            return other
+        else:
+            self.checkType(other)
+            return other * self.__data
+
+    def __truediv__(self, other):
+        if self.__data is None:
+            return self
+        else:
+            self.checkType(other)
+            return int(self.__data / other)
+
+    def __rtruediv__(self, other):
+        if self.__data is None:
+            return other
+        else:
+            self.checkType(other)
+            return int(other / self.__data)
+
+    def __iadd__(self, other):
+        if self.__data is None:
+            return self
+        else:
+            self.checkType(other)
+            self.__data += other
+            self.adjust()
+            return self
+
+    def __isub__(self, other):
+        if self.__data is None:
+            return self
+        else:
+            self.checkType(other)
+            self.__data -= other
+            self.adjust()
+            return self
+
+    def __imul__(self, other):
+        if self.__data is None:
+            return self
+        else:
+            self.checkType(other)
+            self.__data *= other
+            self.adjust()
+            return self
+
+    def __itruediv__(self, other):
+        if self.__data is None:
+            return self
+        else:
+            self.checkType(other)
+            self.__data = int(self.__data / other)
+            self.adjust()
+            return self
+
+    def set(self, other):
+        self.__data = other
+        self.adjust()
+
+    def get(self):
+        return self.__data
     
+    def setMax(self, other):
+        self.__max = other
+    
+    def setMin(self, other):
+        self.__min = other
+
+
+Plsr = namedtuple("Plsr", ["c", "a", "b", "m", "v", "w"])
+
+
+def getPlsr(gender: 0 | 1 | 2):
+    if gender == 1:
+        return Plsr(
+            IntergratedVariable(),
+            IntergratedVariable(),
+            IntergratedVariable(),
+            IntergratedVariable(),
+            IntergratedVariable(None),
+            IntergratedVariable(None),
+        )
+    else:
+        return Plsr(
+            IntergratedVariable(),
+            IntergratedVariable(),
+            IntergratedVariable(),
+            IntergratedVariable(),
+            IntergratedVariable(),
+            IntergratedVariable(),
+        )
+
+
+Part = namedtuple("Part", ["c", "a", "b", "v", "w"])
+
+
+def getPart(gender: 0 | 1 | 2):
+    if gender == 1:
+        return Part(
+            IntergratedVariable(min=0, max=1000),
+            IntergratedVariable(min=0, max=1000),
+            IntergratedVariable(min=0, max=1000),
+            IntergratedVariable(None, min=0, max=1000),
+            IntergratedVariable(None, min=0, max=1000),
+        )
+    else:
+        return Part(
+            IntergratedVariable(min=0, max=1000),
+            IntergratedVariable(min=0, max=1000),
+            IntergratedVariable(min=0, max=1000),
+            IntergratedVariable(min=0, max=1000),
+            IntergratedVariable(min=0, max=1000),
+        )
+
 
 class Character:
     def __init__(self, id, VARSIZE):
@@ -172,6 +267,8 @@ class Character:
 
         # STAIN을 추가해서 흔적이 남도록 만들어줘야 함
 
+        # -------- 신규 파트 ---------
+
         # 위치 관리를 위한 변수
         self.currL: Node = None  # CFLAG[11] - 현재위치
         self.pastL: Node = None  # CFLAG[12] - 이전위치
@@ -179,21 +276,21 @@ class Character:
 
         # 관계를 기록하는 변수
         # - defaultdict에 캐릭터 이름(문자열)로 직접 접근하여 사용
-        self.attr = defaultdict(int) # 호감도 : 양수는 호의 / 음수는 적의
-        self.trst = defaultdict(int) # 신뢰도 : 양수는 신뢰 / 음수는 불신
-        self.subm = defaultdict(int) # 굴복도 : 양수는 순응 / 음수는 반항
+        self.attr = defaultdict(IntergratedVariable)  # 호감도 : 양수는 호의 / 음수는 적의
+        self.trst = defaultdict(IntergratedVariable)  # 신뢰도 : 양수는 신뢰 / 음수는 불신
+        self.subm = defaultdict(IntergratedVariable)  # 굴복도 : 양수는 순응 / 음수는 반항
 
         # 감정을 기록하는 변수
         # - defaultdict에 캐릭터 이름(문자열)로 직접 접근하여 사용 / 어느 감정에 변화를 주는지 인덱스로 지정함
-        self.mood:Dict[str, list[int]] = defaultdict(lambda:[0 for i in range(5)])
+        self.mood: Dict[str, tuple[IntergratedVariable]] = defaultdict(lambda: (IntergratedVariable() for i in range(5)))
 
         # 쾌감을 기록하는 변수 - 0:C, 1:A, 2:B, 3:M, 4:V, 5:W
         # - 클래스를 따로 준비해서 생성된 객체의 메서드를 활용하도록 분리하여 설계됨
-        self.plsr:Plsr = Plsr()
+        self.plsr: Plsr = getPlsr("""TALENT[0]를 반영해야 됨""")
 
         # 부위를 관리하는 변수 - 0:C, 1:A, 2:B, 3:V, 4:W
         # - 클래스를 따로 준비해서 생성된 객체의 메서드를 활용하도록 분리하여 설계됨
-        self.part:Part = Part()
+        self.part: Part = getPart("""TALENT[0]를 반영해야 됨""")
 
         # 부가된 명령을 수행하는데 걸리는 소요시간을 기록하는 변수
         self.remainTime = 0
@@ -287,6 +384,7 @@ class Character:
             if param[0] is not None:
                 if param[0] < 0:
                     param[0] = 0
+
 
 # 게임 내에서 등장하는 캐릭터 목록을 준비하는 함수
 def prepareCharacters(VARSIZE):

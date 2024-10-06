@@ -1,93 +1,115 @@
 import tkinter as tk
 import tkinter.font as font
+from json import load
 
 
 class Display:
-    def setup_text_area(self, root, height, width, defaultFont):
-        textArea = tk.Text(
-            root, height=height, width=width, bg="black", fg="white", font=defaultFont
+    def setup_text_area(
+        self, root, row, column, rowspan, colspan, isImgArea=False
+    ):
+        area = tk.Text(
+            root, height=1, width=1, bg="black", fg="white", font=self.font
         )
-        textArea.tag_configure("center", justify="center")
-        textArea.tag_configure("left", justify="left")
-        textArea.tag_configure("right", justify="right")
-        self.textArea.append(textArea)
+        area.tag_configure("center", justify="center")
+        area.tag_configure("left", justify="left")
+        area.tag_configure("right", justify="right")
+        area.grid(
+            row=row, column=column, rowspan=rowspan, columnspan=colspan, sticky="nsew"
+        )
+        if isImgArea:
+            self.imgArea.append(area)
+        else:
+            self.textArea.append(area)
 
     def __init__(self, setting):
+        
+
         self.root = tk.Tk()
         self.root.configure(bg="black")
-        self.root.title(f"{setting['TITLE']} {setting['VERSION']}")
-        self.root.geometry(setting["SIZE"])
-        self.root.resizable(
-            bool(int(setting["RESIZEW"])), bool(int(setting["RESIZEH"]))
-        )
-        self.font = font.Font(
-            family=setting["FONTNAME"],
-            size=setting["FONTSIZE"],
-            weight=setting["FONTWEIGHT"],
-        )
+        self.root.title(f"{setting['title']} {setting['version']}")
+        self.root.geometry(setting["screen_size"])
+
+        # 메인 윈도우의 최소 크기 제한 : 600 x 570
+        self.root.minsize(720, 650)
+        self.root.resizable(True, True)
+
+        self.font = font.Font(family=setting["font_name"], size=setting["font_size"])
 
         self.imgArea = []
-
         self.textArea: list[tk.Text] = []
 
-        # root를 2개로 나눔 : frame1(top)과 frame2(bottom)
-        frame1 = tk.Frame(self.root, height=1, bg="black")
-        frame1.pack(side="top", fill="both")
-        frame2 = tk.Frame(self.root, bg="black")
-        frame2.pack(side="top", fill="both")
+        # 메인 그리드 레이아웃 설정(행/열)
+        # ---- 행 설정 ----
+        row_settings = [
+            (0, 0, 30),  # 1행 : 전역 정보 영역 - 고정된 높이를 가짐
+            (1, 0, 160),  # 2행 : 아나타 정보 영역 - 최소 높이를 가짐
+            (2, 0, 160),  # 3행 : 환녀의 정보 영역 - 최소 높이를 가짐
+            (3, 1, 100),  # 4행
+            (4, 1, 100),  # 5행
+        ]
+        for row, weight, minsize in row_settings:
+            self.root.rowconfigure(row, weight=weight, minsize=minsize)
 
-        # frame1에 전역정보를 위한 텍스트위젯 추가
-        self.setup_text_area(frame1, 1, 100, self.font)
-        self.textArea[0].pack(side="top", fill="x", padx=0, pady=0, expand=True)
+        # ---- 열 설정 ----
+        col_settings = [
+            (
+                0,
+                0,
+                120,
+            ),  # 1열 : 사진 영역이 존재함 - 고정된 너비를 가지며 변동이 되면 안됨
+            (1, 1, 150),  # 2열
+            (2, 1, 150),  # 3열
+            (3, 0, 150),  # 4열
+            (4, 0, 150),  # 5열
+        ]
+        for col, weight, minsize in col_settings:
+            self.root.columnconfigure(col, weight=weight, minsize=minsize)
 
-        # frame2를 다시 나눔 : frame21(top)과 frame22(bottom)
-        frame21 = tk.Frame(frame2, bg="black")
-        frame21.pack(side="top", fill="both", expand=True)
-        frame22 = tk.Frame(frame2, bg="black")
-        frame22.pack(side="bottom", fill="both", expand=True)
+        # 1행 : 전역 정보 영역
+        self.setup_text_area(
+            self.root, row=0, column=0, rowspan=1, colspan=5
+        )
 
-        # frame21를 다시 나눔 : frame211(left)와frame212(right)
-        frame211 = tk.Frame(frame21, bg="black")
-        frame211.pack(side="left", fill="both", expand=True)
-        frame212 = tk.Frame(frame21, bg="black")
-        frame212.pack(side="right", fill="both", expand=True)
+        # 2행 : 아나타의 정보 영역
+        self.setup_text_area(
+            self.root,
+            row=1,
+            column=0,
+            rowspan=1,
+            colspan=1,
+            isImgArea=True,
+        )  # 이미지 영역
+        self.setup_text_area(
+            self.root, row=1, column=1, rowspan=1, colspan=2
+        )  # 텍스트 영역
 
-        # frame211을 나눔 : frame211t(top)와 frame211b(bottom)
-        frame211t = tk.Frame(frame211, bg="black")
-        frame211t.pack(side="top", fill="both", expand=True)
-        frame211b = tk.Frame(frame211, bg="black")
-        frame211b.pack(side="bottom", fill="both", expand=True)
+        # 3행 : 상대방의 정보 영역
+        self.setup_text_area(
+            self.root,
+            row=2,
+            column=0,
+            rowspan=1,
+            colspan=1,
+            isImgArea=True,
+        )  # 이미지 영역
+        self.setup_text_area(
+            self.root, row=2, column=1, rowspan=1, colspan=2
+        )  # 텍스트 영역
 
-        # frame211t에는 아나타의 정보 출력 텍스트위젯
-        self.setup_text_area(frame211t, 10, 2, self.font)
-        self.imgArea.append(self.textArea.pop())
-        self.imgArea[0].pack(side="left", fill="both", padx=0, pady=0, expand=True)
-        self.setup_text_area(frame211t, 10, 51, self.font)
-        self.textArea[1].pack(side="right", fill="both", padx=0, pady=0, expand=True)
+        # 2행과 3행 통합 : 지도 영역
+        self.setup_text_area(
+            self.root, row=1, column=3, rowspan=2, colspan=2
+        )
 
-        # frame211b에는 선택한 캐틱터의 정보 출력 텍스트위젯
-        self.setup_text_area(frame211b, 10, 2, self.font)
-        self.imgArea.append(self.textArea.pop())
-        self.imgArea[1].pack(side="left", fill="both", padx=0, pady=0, expand=True)
-        self.setup_text_area(frame211b, 10, 51, self.font)
-        self.textArea[2].pack(side="right", fill="both", padx=0, pady=0, expand=True)
+        # 대사 출력 텍스트 (3행 전체를 차지)
+        self.setup_text_area(
+            self.root, row=3, column=0, rowspan=1, colspan=5
+        )
 
-        # frame212 전체에는 맵 정보 출력 텍스트 위젯
-        self.setup_text_area(frame212, 20, 43, self.font)
-        self.textArea[3].pack(side="top", fill="both", padx=0, pady=0, expand=True)
+        # 마지막 행에 버튼을 출력하는 텍스트 위젯
+        self.setup_text_area(
+            self.root, row=4, column=0, rowspan=1, colspan=5
+        )
 
-        # frame22를 다시 나눔 : frame221(top)과 frame222(bottom)
-        frame221 = tk.Frame(frame22, bg="black")
-        frame221.pack(side="top", fill="x", expand=True)
-        frame222 = tk.Frame(frame22, bg="black")
-        frame222.pack(side="top", fill="both", expand=True)
-
-        # frame221은 대사 출력을 위한 텍스트위젯
-        self.setup_text_area(frame221, 20, 100, self.font)
-        self.textArea[4].pack(side="top", fill="both", padx=0, pady=0)
-
-        # frame222는 클릭할 버튼을 출력하기 위한 텍스트위젯
-        self.setup_text_area(frame222, 56, 100, self.font)
-        self.textArea[5].pack(side="top", fill="both", padx=0, pady=0)
-
+        # 창 업데이트
         self.root.update()
