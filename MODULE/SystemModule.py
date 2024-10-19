@@ -43,10 +43,6 @@ class System:
         with open("./DATA/setting2.json", "r", encoding="utf-8") as file:
             self.setting2 = load(file)
 
-        with open("./DATA/VARSIZE.csv", "r", encoding="utf-8") as csvFile:
-            result = read(csvFile)
-            self.VARSIZE = {row[0]:int(row[1]) for row in result if row != []}
-
         # 경험치 명칭 DB 생성
         with open("./DATA/EXP.csv", "r", encoding="utf-8") as csvFile:
             result = read(csvFile)
@@ -84,33 +80,6 @@ class System:
         # 사용할 커맨드 생성 - 객체가 생성된 후 진행함
         self.COM = defaultdict(None)
 
-        with open("./DATA/TALENT.csv", "r", encoding="utf-8") as csvFile:
-            result = read(csvFile)
-            self.TALENTNAME = {}
-            for row in result:
-                if row == [] or row[0] == "" or row[0].startswith(";"):
-                    continue
-                else:
-                    self.TALENTNAME[int(row[0])] = row[1]
-
-        with open("./DATA/ABL.csv", "r", encoding="utf-8") as csvFile:
-            result = read(csvFile)
-            self.ABLNAME = {}
-            for row in result:
-                if row == [] or row[0] == "" or row[0].startswith(";"):
-                    continue
-                else:
-                    self.ABLNAME[int(row[0])] = row[1]
-
-        with open("./DATA/EQUIP.csv", "r", encoding="utf-8") as csvFile:
-            result = read(csvFile)
-            self.EQUIPNAME = {}
-            for row in result:
-                if row == [] or row[0] == "" or row[0].startswith(";"):
-                    continue
-                else:
-                    self.EQUIPNAME[int(row[0])] = row[1]
-
         with open("./DATA/LV.csv", "r", encoding="utf-8") as csvFile:
             result = read(csvFile)
             self.LV = {}
@@ -123,7 +92,7 @@ class System:
         self.MASTER:int = None
         self.MAP:dict = None
         self.TIME = 0
-        self.GFLAG = [0 for i in range(self.VARSIZE["GFLAG"])]
+        self.GFLAG = [0 for i in range(100)]
         self.__format = "{}%s {}%s {}%s {}%s {}%s"%(self.setting2["format"][0], self.setting2["format"][1], self.setting2["format"][2], self.setting2["format"][3], self.setting2["format"][4])
 
         # UI 셋업
@@ -146,13 +115,6 @@ class System:
     @RESULT.setter
     def RESULT(self, value):
         self._RESULT.set(value)
-
-    # EXPNAME을 조합하여 반환하는 함수 - 첫번째 매개변수는 카테고리, 두번째 매개변수는 부위
-    def EXPNAME(self, index1:int, index2:int = None):
-        if self.__EXPNAME2[self.__EXPNAME1[index1]] == None or index2 == None:
-            return self.__EXPNAME1[index1]
-        else:
-            return f"{self.__EXPNAME1[index1]}({self.__EXPNAME2[self.__EXPNAME1[index1]][index2]})"
         
     # 출력과 관련된 메서드
     # 줄 긋기
