@@ -169,7 +169,6 @@ class TagedVariable:
         return self.__data
 
 
-#
 class Character:
     def __init__(self, id):
         with open(f"DATA/CHARA{id}.json", "r", encoding="utf-8") as jsonFile:
@@ -181,70 +180,76 @@ class Character:
         self.__id = data["ID"]
         self.__name = {"이름": data["NAME"], "애칭": data["NICK"]}
 
-        # 소질관리용 변수 - 기본값이 0인 defaultdict이니 주의할 것
-        self.talent = defaultdict(IntegerVariable, data["TALENT"])
+        # 소질관리용 변수 - 기본값이 None인 defaultdict이니 주의할 것
+        self.talent = defaultdict(lambda : IntegerVariable(None), data["TALENT"])
 
         # 기본수치 관리용 변수 - 최대/최소가 존재하니 주의
         self.base = (
             TagedVariable("체력", 0, data["BASE"]["체력"]),
-            TagedVariable("정신력", 0, data["BASE"]["정신력"]),
-            TagedVariable("피로도", 0, data["BASE"]["피로도"]),
-            TagedVariable("욕망", 0, data["BASE"]["욕망"]),
+            TagedVariable("이성", 0, data["BASE"]["이성"]),
+            TagedVariable("피로", 0, data["BASE"]["피로"]),
             TagedVariable("배설욕", 0, data["BASE"]["배설욕"]),
-            TagedVariable(
-                "정액량", 0, data["BASE"]["정액량"], self.talent["성별"] != 0
-            ),
-            TagedVariable(
-                "모유량", 0, data["BASE"]["모유량"], self.talent["성별"] != 1
-            ),
+            TagedVariable("정액량", 0, data["BASE"]["정액량"], self.talent["성별"] != 1),
+            TagedVariable("모유량", 0, data["BASE"]["모유량"], self.talent["성별"] != 2),
         )
 
         # 쾌감을 기록하는 변수 - 최대 / 최소 없음
         # - 클래스를 따로 준비해서 생성된 객체의 메서드를 활용하도록 분리하여 설계됨
         self.plsr = (
-            TagedVariable(("P" if self.talent["성별"] != 0 else "C") + "쾌감"),
+            TagedVariable(("P" if self.talent["성별"] != 1 else "C") + "쾌감"),
             TagedVariable("A쾌감"),
             TagedVariable("B쾌감"),
             TagedVariable("M쾌감"),
-            TagedVariable("V쾌감", isValid=self.talent["성별"] != 1),
-            TagedVariable("W쾌감", isValid=self.talent["성별"] != 1),
+            TagedVariable("V쾌감", isValid=self.talent["성별"] != 2),
+            TagedVariable("W쾌감", isValid=self.talent["성별"] != 2),
         )
 
         # 경험을 기록하는 변수 - 최대 / 최소 없음
+        # ※ 스스로 경험한 것만 기록되어야 함
         self.exp1 = defaultdict(
             lambda: (
-                TagedVariable(("P" if self.talent["성별"] != 0 else "C") + "절정경험"),
-                TagedVariable("A절정경험"),
-                TagedVariable("B절정경험"),
-                TagedVariable("M절정경험"),
-                TagedVariable("V절정경험", isValid=self.talent["성별"] != 1),
-                TagedVariable("W절정경험", isValid=self.talent["성별"] != 1),
+                TagedVariable(("P" if self.talent["성별"] != 1 else "C") + "절정경험", 0),
+                TagedVariable("A절정경험", 0),
+                TagedVariable("B절정경험", 0),
+                TagedVariable("M절정경험", 0),
+                TagedVariable("V절정경험", 0, isValid=self.talent["성별"] != 2),
+                TagedVariable("W절정경험", 0, isValid=self.talent["성별"] != 2),
             )
         )
         self.exp2 = defaultdict(
             lambda: (
-                TagedVariable(("P" if self.talent["성별"] != 0 else "C") + "개발경험"),
-                TagedVariable("A개발경험"),
-                TagedVariable("B개발경험"),
-                TagedVariable("M개발경험"),
-                TagedVariable("V개발경험", isValid=self.talent["성별"] != 1),
-                TagedVariable("W개발경험", isValid=self.talent["성별"] != 1),
+                TagedVariable(("P" if self.talent["성별"] != 1 else "C") + "개발경험", 0),
+                TagedVariable("A개발경험", 0),
+                TagedVariable("B개발경험", 0),
+                TagedVariable("M개발경험", 0),
+                TagedVariable("V개발경험", 0, isValid=self.talent["성별"] != 2),
+                TagedVariable("W개발경험", 0, isValid=self.talent["성별"] != 2),
             )
         )
         self.exp3 = defaultdict(
             lambda: (
-                TagedVariable(("P" if self.talent["성별"] != 0 else "C") + "성교경험"),
-                TagedVariable("A성교경험"),
-                TagedVariable("B성교경험"),
-                TagedVariable("M성교경험"),
-                TagedVariable("V성교경험", isValid=self.talent["성별"] != 1),
-                TagedVariable("W성교경험", isValid=self.talent["성별"] != 1),
+                TagedVariable(("P" if self.talent["성별"] != 1 else "C") + "성교경험", 0),
+                TagedVariable("A성교경험", 0),
+                TagedVariable("B성교경험", 0),
+                TagedVariable("M성교경험", 0),
+                TagedVariable("V성교경험", 0, isValid=self.talent["성별"] != 2),
+                TagedVariable("W성교경험", 0, isValid=self.talent["성별"] != 2),
             )
         )
         self.exp4 = defaultdict(
             lambda: (
-                None,
-                None,
+                TagedVariable("업무경험", 0), # 청소 / 요리 / 정리 / 차 타기 등
+                TagedVariable("대화경험", 0),
+                TagedVariable("봉사경험", 0),
+                TagedVariable("이상경험", 0),
+                TagedVariable("NTR경험", 0),
+                TagedVariable("SM경험", 0),
+            )
+        )
+        self.exp4 = defaultdict(
+            lambda: (
+                TagedVariable("이성경험", 0),
+                TagedVariable("동성경험", 0),
                 None,
                 None,
                 None,
@@ -252,19 +257,44 @@ class Character:
             )
         )
         
+        # 능력을 기록하는 변수 - 최대 10 / 최소 0
+        self.abl1 = ( # 감도는 개발경험에 의하여 발전함
+            TagedVariable(("P" if self.talent[0].get() != 1 else "C") + "감도", 0, 10), # P/C개발경험 의하여 발전함
+            TagedVariable("A감도", 0, 10),                                             # A개발경험에 의하여 발전함
+            TagedVariable("B감도", 0, 10),                                             # B개발경험에 의하여 발전함
+            TagedVariable("M감도", 0, 10),                                             # M개발경험에 의하여 발전함
+            TagedVariable("V감도", 0, 10, self.talent["성별"] != 2),                   # V개발경험에 의하여 발전함 
+            TagedVariable("W감도", 0, 10, self.talent["성별"] != 2),                   # W개발경험에 의하여 발전함
+        )
+        self.abl2 = (
+            TagedVariable("S끼", 0, 10),    # 관계기록에서 S성향이 일정수치 이상 누적되면 올라감
+            TagedVariable("M끼", 0, 10),    # 관계기록에서 M성향이 일정수치 이상 누적되면 올라감
+            TagedVariable("변태도", 0, 10),   # 이상경험에 의하여 발전함
+            TagedVariable("중독도", 0, 10),   # 절정경험에 의하여 발전함
+            TagedVariable("동성애", 0, 10),   # 동성경험에 의하여 발전함
+            TagedVariable("바람끼", 0, 10),   # NTR경험에 의하여 발전함
+        )
+        self.abl3 = (
+            TagedVariable("입기술", 0, 10),   # M성교경험에 의하여 발전함
+            TagedVariable("손기술", 0, 10),   # 봉사경험에 의하여 발전함
+            TagedVariable("발기술", 0, 10),   # 봉사경험에 의하여 발전함
+            TagedVariable("허리기술", 0, 10), # V,A 성교경험에 의하여 발전함
+            TagedVariable("봉사기술", 0, 10), # 봉사경험에 의하여 발전함
+            TagedVariable("NTR기술", 0, 10),  # NTR경험에 의하여 발전함
+        )
 
 
         # 부위를 관리하는 변수 - 최대 1000 / 최소 0
         # - 클래스를 따로 준비해서 생성된 객체의 메서드를 활용하도록 분리하여 설계됨
         self.body = (
             TagedVariable(
-                ("C" if self.talent[0].get() == 0 else "P") + "상태", 0, 1000
+                ("P" if self.talent[0].get() != 1 else "C") + "상태", 0, 1000
             ),
             TagedVariable("A상태", 0, 1000),
             TagedVariable("B상태", 0, 1000),
             TagedVariable("M상태", 0, 1000),
-            TagedVariable("V상태", 0, 1000, self.talent["성별"] != 1),
-            TagedVariable("W상태", 0, 1000, self.talent["성별"] != 1),
+            TagedVariable("V상태", 0, 1000, self.talent["성별"] != 2),
+            TagedVariable("W상태", 0, 1000, self.talent["성별"] != 2),
         )
 
         # 관계를 기록하는 변수
@@ -273,7 +303,7 @@ class Character:
             lambda: InvertedVariable(["호의", "적의"])
         )
         self.trst = defaultdict(  # 신뢰도 : 상대방에 대하여 양수는 신뢰 / 음수는 불신
-            lambda: InvertedVariable(["신뢰", "불신"])
+            lambda: InvertedVariable(["신뢰", "의심"])
         )
         self.subm = defaultdict(  # 관계도 : 상대방에 대하여 양수는 S성향 / 음수는 M성향
             lambda: InvertedVariable(["S성향", "M성향"])
@@ -284,12 +314,12 @@ class Character:
         self.mood = defaultdict(
             lambda: (
                 InvertedVariable(["기쁨", "슬픔"]),
-                InvertedVariable(["분노", "공포"]),
-                InvertedVariable(["혐오", "수용"]),
-                InvertedVariable(["기대", "놀람"]),
-                InvertedVariable(["욕망", "평정"]),
-                InvertedVariable(["친밀감", "소외감"]),
-                InvertedVariable(["수치짐", "자신감"]),
+                InvertedVariable(["기대", "공포"]),
+                InvertedVariable(["흥분", "권태"]),
+                InvertedVariable(["욕망", "혐오"]),
+                InvertedVariable(["안정", "불안"]),
+                InvertedVariable(["자존", "수치"]),
+                InvertedVariable(["관심", "무심"]),
             )
         )
 
