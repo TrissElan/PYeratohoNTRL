@@ -34,6 +34,9 @@ class Node:
             else:
                 # 판별이 필요한 것이면 구별해서 자동 선택됨
                 return self.__name + ("으로" if hasFinal else "로")
+            
+    def __contains__(self, chara):
+        return chara in self.space
 
     def __str__(self):
         return f"{self.NAME} ({self.smell}, {self.stain})"

@@ -3,6 +3,7 @@ from PIL import Image, ImageTk
 from MapModule import Node
 from collections import defaultdict
 from typing import Dict, Optional
+from MODULE.SystemModule import SYSTEM
 
 
 class IntegerVariable:
@@ -242,15 +243,15 @@ class Character:
                 TagedVariable("대화경험", 0),
                 TagedVariable("봉사경험", 0),
                 TagedVariable("이상경험", 0),
-                TagedVariable("NTR경험", 0),
-                TagedVariable("SM경험", 0),
+                TagedVariable("이성경험", 0),
+                TagedVariable("동성경험", 0),
             )
         )
         self.exp4 = defaultdict(
             lambda: (
-                TagedVariable("이성경험", 0),
-                TagedVariable("동성경험", 0),
-                None,
+                TagedVariable("NTR경험", 0),
+                TagedVariable("SM경험", 0),
+                TagedVariable("노출경험", 0),
                 None,
                 None,
                 None,
@@ -267,14 +268,6 @@ class Character:
             TagedVariable("W감도", 0, 10, self.talent["성별"] != 2),                   # W개발경험에 의하여 발전함
         )
         self.abl2 = (
-            TagedVariable("S끼", 0, 10),    # 관계기록에서 S성향이 일정수치 이상 누적되면 올라감
-            TagedVariable("M끼", 0, 10),    # 관계기록에서 M성향이 일정수치 이상 누적되면 올라감
-            TagedVariable("변태도", 0, 10),   # 이상경험에 의하여 발전함
-            TagedVariable("중독도", 0, 10),   # 절정경험에 의하여 발전함
-            TagedVariable("동성애", 0, 10),   # 동성경험에 의하여 발전함
-            TagedVariable("바람끼", 0, 10),   # NTR경험에 의하여 발전함
-        )
-        self.abl3 = (
             TagedVariable("입기술", 0, 10),   # M성교경험에 의하여 발전함
             TagedVariable("손기술", 0, 10),   # 봉사경험에 의하여 발전함
             TagedVariable("발기술", 0, 10),   # 봉사경험에 의하여 발전함
@@ -282,8 +275,15 @@ class Character:
             TagedVariable("봉사기술", 0, 10), # 봉사경험에 의하여 발전함
             TagedVariable("NTR기술", 0, 10),  # NTR경험에 의하여 발전함
         )
-
-
+        self.abl3 = (
+            TagedVariable("S끼", 0, 10),    # 관계기록에서 S성향이 일정수치 이상 누적되면 올라감
+            TagedVariable("M끼", 0, 10),    # 관계기록에서 M성향이 일정수치 이상 누적되면 올라감
+            TagedVariable("변태도", 0, 10),   # 이상경험에 의하여 발전함
+            TagedVariable("중독도", 0, 10),   # 절정경험에 의하여 발전함
+            TagedVariable("노출벽", 0, 10),   # 노출경험에 의하여 발전함
+            TagedVariable("바람끼", 0, 10),   # NTR경험에 의하여 발전함
+        )
+        
         # 부위를 관리하는 변수 - 최대 1000 / 최소 0
         # - 클래스를 따로 준비해서 생성된 객체의 메서드를 활용하도록 분리하여 설계됨
         self.body = (
@@ -330,12 +330,17 @@ class Character:
         self._currentAction = None
 
         # 캐릭터가 선택한 대상을 기록하는 변수
-        self.TARGET: Character = None
+        self.target: Character = None
 
         # 위치 관리를 위한 변수
         self.currL: Node = None  # CFLAG[11] - 현재위치
         self.pastL: Node = None  # CFLAG[12] - 이전위치
         self.route: list[Node] = []
+
+        # 그 외 각종 flag기록 변수
+        self.cflag = [0 for i in range(100)]
+        for key, value in data["FLAG"].items():
+            self.cflag[int(key)] = value
 
     def name(self, after: str | None = None, select="애칭"):
         if after is None:
@@ -369,6 +374,10 @@ class Character:
             return self.name() + msg
         else:
             return self.name(msg[0]) + msg[1:]
+    
+    def info(self, area:int):
+        SYSTEM.setImage()
+        pass
 
 
 # 게임 내에서 등장하는 캐릭터 목록을 준비하는 함수

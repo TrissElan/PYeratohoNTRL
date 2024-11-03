@@ -2,10 +2,8 @@ from csv import reader as read
 from json import load
 from collections import defaultdict
 import MODULE.DisplayModule as DM
-import MODULE.CharacterModule as CM
 import tkinter as tk
 import tkinter.font as font
-import typing
 import random as rd
 import unicodedata
 
@@ -23,19 +21,21 @@ def on_leave(e, tag=None):
 
 # 싱글톤 패턴 클래스 : 클래스의 전역변수로 접근함
 class System:
-    __instance:typing.Optional["System"] = None
+    __instance:"System" = None
+    __initialized = False
+    time_standard = [518400, 43200, 1440, 60]
 
     def __new__(cls, *args, **kwargs):
         if cls.__instance is None:
-            cls.__instance = super(System, cls).__new__(cls, *args, **kwargs)
-            cls.__instance.__initialized = False
+            cls.__instance = super().__new__(cls)
         return cls.__instance
 
     def __init__(self):
-        if self.__initialized:
+        if self.__class__.__initialized:
             return
-        self.__initialized = True
-        self.__initialize()
+        else:
+            self.__class__.__initialized = True
+            self.__initialize()
 
     def __initialize(self):
         with open("./DATA/setting1.json", "r", encoding="utf-8") as file:
@@ -43,85 +43,47 @@ class System:
         with open("./DATA/setting2.json", "r", encoding="utf-8") as file:
             self.setting2 = load(file)
 
-        # 경험치 명칭 DB 생성
-        with open("./DATA/EXP.csv", "r", encoding="utf-8") as csvFile:
-            result = read(csvFile)
-            self.__EXPNAME1 = []
-            self.__EXPNAME2 = {}
-            for row in result:
-                if row == [] or row[0] == "" or row[0].startswith(";"):
-                    continue
-                else:
-                    self.__EXPNAME1.append(row[3])
-                    if row[4] == "EOL":
-                        self.__EXPNAME2[row[3]] = None
-                    else:
-                        self.__EXPNAME2[row[3]] = []
-                        for i in range(4, len(row)):
-                            self.__EXPNAME2[row[3]].append(row[i])
-
-        # 파라미터 명칭 DB 생성
-        with open("./DATA/PARAM.csv", "r", encoding="utf-8") as csvFile:
-            result = read(csvFile)
-            self.__PARAMNAME1 = []
-            self.__PARAMNAME2 = {}
-            for row in result:
-                if row == [] or row[0] == "" or row[0].startswith(";"):
-                    continue
-                else:
-                    self.__PARAMNAME1.append(row[3])
-                    if row[4] == "EOL":
-                        self.__PARAMNAME1[row[3]] = None
-                    else:
-                        self.__PARAMNAME2[row[3]] = []
-                        for i in range(4, len(row)):
-                            self.__PARAMNAME2[row[3]].append(row[i])
-
         # 사용할 커맨드 생성 - 객체가 생성된 후 진행함
-        self.COM = defaultdict(None)
-
-        with open("./DATA/LV.csv", "r", encoding="utf-8") as csvFile:
-            result = read(csvFile)
-            self.LV = {}
-            for row in result:
-                self.LV[row[0]] = [int(row[i]) for i in range(1, len(row))]
-
+        self.COMMAND = defaultdict(None)
         self.CHARACTERS:list = None
         self.CLOTHLIST:dict = None
         self.ITEMNAME:dict = None
         self.MASTER:int = None
         self.MAP:dict = None
-        self.TIME = 0
         self.GFLAG = [0 for i in range(100)]
-        self.__format = "{}%s {}%s {}%s {}%s {}%s"%(self.setting2["format"][0], self.setting2["format"][1], self.setting2["format"][2], self.setting2["format"][3], self.setting2["format"][4])
 
-        # UI 셋업
+        # UI 셋업 - 구상출력영역은 실제 게임에 접속한 이후부터 우클릭을 통한 출력내용 제거가 가능함 / 그 외에는 불가능함
         self.DISPLAY = DM.Display(self.setting1)
-
-        # 구상출력영역은 실제 게임에 접속한 이후부터 우클릭을 통한 출력내용 제거가 가능함 / 그 외에는 불가능함
         self.DISPLAY.textArea[4].bind("<Button-3>", lambda e: self.delText(4) if self.GFLAG[0] == 3 else None)
-
         self.DISPLAY.root.protocol("WM_DELETE_WINDOW", self.on_closing)
         self.scheduled_tasks = []
-        self._RESULT = tk.IntVar()
-        self._RESULT.set(0)
+
+        # 시간 변수 준비
+        self.time = 0
+        self.__format = "{}%s {}%s {}%s {}%s {}%s" % tuple(self.setting2["format"])
+
+        # 선택값 저장 변수 준비
+        self.__result = tk.IntVar()
+        self.__result.set(0)
     
     @property
     def timeInfo(self):
-        return self.__format.format(self.TIME // 518400, self.TIME % 518400 // 43200 + 1, self.TIME % 43200 // 1440 + 1, self.TIME % 1440 // 60, self.TIME % 60)  
+        minute = self.time
+        times = []
+        for unit in self.time_standard:
+            times.append(minute // unit)
+            minute %= unit
+        times.append(minute)
+        return self.__format.format(*times)
+
     @property
-    def RESULT(self)->int:
-        return self._RESULT.get()
-    @RESULT.setter
-    def RESULT(self, value):
-        self._RESULT.set(value)
+    def result(self)->int:
+        return self.__result.get()
+    @result.setter
+    def result(self, value):
+        self.__result.set(value)
         
     # 출력과 관련된 메서드
-    # 줄 긋기
-    def drawLine(self, shape, index = 4):
-        fontWidth = font.nametofont(self.DISPLAY.textArea[index].cget("font")).measure("-")
-        windowWidth = self.DISPLAY.textArea[index].winfo_width()
-        self.setText(shape * (windowWidth // fontWidth - 1) + "\n", index)
     
     # 사진 영역
     # - 사진 출력
@@ -139,6 +101,12 @@ class System:
             imgArea.delete("1.0", tk.END)
 
     # 텍스트 영역
+    # - 줄 긋기
+    def drawLine(self, shape, index = 4):
+        fontWidth = font.nametofont(self.DISPLAY.textArea[index].cget("font")).measure("-")
+        windowWidth = self.DISPLAY.textArea[index].winfo_width()
+        self.setText(shape * (windowWidth // fontWidth - 1) + "\n", index)
+
     # - 텍스트 출력
     def setText(self, msg, align='left', index = 4):
         self.DISPLAY.textArea[index].insert("end", msg, align)
@@ -191,13 +159,13 @@ class System:
                     self.DISPLAY.textArea[5].tag_add(tagName, start, end)
                     self.DISPLAY.textArea[5].tag_bind(tagName, "<Enter>", lambda e, tag=tagName: on_enter(e, tag))
                     self.DISPLAY.textArea[5].tag_bind(tagName, "<Leave>", lambda e, tag=tagName: on_leave(e, tag))
-                    self.DISPLAY.textArea[5].tag_bind(tagName, "<Button-1>", lambda e, value = key : self._RESULT.set(value))
-        self.DISPLAY.root.wait_variable(self._RESULT)
+                    self.DISPLAY.textArea[5].tag_bind(tagName, "<Button-1>", lambda e, value = key : self.__result.set(value))
+        self.DISPLAY.root.wait_variable(self.__result)
 
     # 임의선택함수
     def inputr(self, commands:dict)->int:
         key = rd.choice(list(commands.keys()))
-        self._RESULT.set(key)
+        self.__result.set(key)
 
     # 이벤트루트를 시작하는 메서드
     def mainloop(self):
@@ -226,7 +194,7 @@ class System:
     def on_closing(self):
         try:
             self.cancel_all_tasks()  # 추가: 모든 예약된 작업 취소
-            self._RESULT.set(0)
+            self.__result.set(0)
             self.DISPLAY.root.quit()  # 이벤트 루프 중단
             self.DISPLAY.root.destroy()  # 창 닫기
         except Exception as e:
@@ -253,6 +221,8 @@ class System:
                 else:
                     cnum = int(row[0])
                     if cnum in commands:
-                        self.COM[int(cnum)] = (row[1], commands[cnum])
+                        self.COMMAND[int(cnum)] = (row[1], commands[cnum])
                     else:
-                        self.COM[int(cnum)] = None
+                        self.COMMAND[int(cnum)] = None
+
+SYSTEM = System()
