@@ -10,6 +10,8 @@ class Simulation:
     def __init__(self):
         self.__current = 0
         self.commands = None
+        self.master = SYSTEM.CHARACTERS[SYSTEM.MASTER]
+
         SYSTEM.GFLAG[0] = 3
         # SYSTEM.delText(4)
         SYSTEM.after(self.phase0)
@@ -21,11 +23,6 @@ class Simulation:
         SYSTEM.GFLAG[-3] = True
         SYSTEM.GFLAG[-2] = True
         SYSTEM.GFLAG[-1] = True
-    
-    def get_variables(self):
-        MASTER = SYSTEM.CHARACTERS[SYSTEM.MASTER]
-        LOCATION = MASTER.currL
-        return MASTER, LOCATION
     
     @property
     def current_player(self) -> CM.Character:
@@ -41,7 +38,7 @@ class Simulation:
             self.current = 0
     
     def select_target(self, other: CM.Character):
-        MASTER, MASTER_LOCATION = self.get_variables()
+        MASTER, MASTER_LOCATION = self.master, self.master.currL
         
         player = self.current_player
         player.target = other
@@ -99,18 +96,17 @@ class Simulation:
 
     # 기본설정
     def phase0(self):
-        self.MASTER_SPACE = self.MASTER.currL.space
         CHARA: CM.Character = SYSTEM.CHARACTERS[self.current]
 
         SYSTEM.RESULT = 0
 
         # 대상의 존재여부 확인 / 같은 방에 있어야만 선택된 상태로 유지됨
-        if CHARA.TARGET != None:
-            if CHARA.TARGET not in CHARA.currL.space:
-                CHARA.TARGET = None
+        if CHARA.target != None:
+            if CHARA.target not in CHARA.currL.space:
+                CHARA.target = None
 
         # 대상이 없을 경우 대상을 선택함 / 현재는 33.3% 확률로 선정함
-        if CHARA != MASTER and CHARA.TARGET == None and len(CHARA.currL.space) > 1:
+        if CHARA != self.master and CHARA.target == None and len(CHARA.currL.space) > 1:
             RESULT = SYSTEM.RANDOM(3)
             targets = [chara for chara in CHARA.currL.space if chara != CHARA]
             if RESULT == 1:
@@ -132,24 +128,24 @@ class Simulation:
         SYSTEM.delText(1)
         SYSTEM.delText(2)
         SYSTEM.delText(3)
-        # SYSTEM.delText(4)
+        SYSTEM.delText(4)
         SYSTEM.delText(5)
         # SYSTEM.delImageArea(1)
         # SYSTEM.delImageArea(2)
 
         # 캐릭터와 캐릭터가 상호작용중인 대상 준비
         CHARA: CM.Character = SYSTEM.CHARACTERS[self.current]
-        TARGET: CM.Character = CHARA.TARGET
+        TARGET: CM.Character = CHARA.target
 
         # 0번 텍스트 위젯 : 시간 및 선택가능한 캐릭터 출력
         self.current_info()
 
         # 1번 텍스트 위젯 - 아나타의 파라미터 출력
-        IM.showParam(CHARA, 1)
+        CHARA.short_info(1)
 
         # 2번 텍스트 위젯 - 선택된 캐릭터가 있을 경우 선택된 캐릭터의 파라미터 출력
         if TARGET != None:
-            IM.showParam(CHARA.TARGET, 2)
+            TARGET.short_info(2)
 
         # 3번 텍스트 위젯 - 지도 출력
         MM.showMap(CHARA.currL.ID)
