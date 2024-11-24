@@ -3,24 +3,22 @@ sys.path.append("./MODULE")
 sys.path.append("./COMMAND")
 
 from MODULE.SystemModule import SYSTEM
-import start_from_zero as SZ
+import start_from_zero
 
-SYSTEM.prepareCommand()
-
-
-class StartUp:
+class StartMenu:
     def __init__(self):
-        SYSTEM.result = 0
+        self.__commands = {
+            1: (SYSTEM.setting2["start"], None),
+            2: (SYSTEM.setting2["load"], None),
+        }
+
+    def start(self):
+        SYSTEM.mainloop()
+        SYSTEM.after(self.phase0)
+        
+    def phase0(self):
         SYSTEM.clearImgArea()
         SYSTEM.clearTextArea()
-       
-    def start(self):
-        SYSTEM.after(self.phase0)
-        SYSTEM.mainloop()
-
-    def phase0(self):
-        SYSTEM.delText(4)
-        SYSTEM.delText(5)
         SYSTEM.after(self.phase1)
 
     def phase1(self):
@@ -30,21 +28,18 @@ class StartUp:
         SYSTEM.after(self.phase2)
 
     def phase2(self):
-        commands = {
-            1: (SYSTEM.setting2["start"], None),
-            2: (SYSTEM.setting2["load"], None),
-            3: (SYSTEM.setting2["exit"], None),
-        }
-        SYSTEM.input(commands, 8, 1)
+        SYSTEM.input(self.__commands, 8, 1)
         SYSTEM.after(self.phase3)
 
     def phase3(self):
         if SYSTEM.result == 1:
-            SYSTEM.after(SZ.preprare)
+            SYSTEM.after(start_from_zero.main)
         else:
             SYSTEM.after(self.phase0)
 
-    
-if __name__ == "__main__":
-    game = StartUp()
+def main():
+    game = StartMenu()
     game.start()
+
+if __name__ == "__main__":
+    main()

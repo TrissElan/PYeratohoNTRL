@@ -12,7 +12,7 @@ class Node:
         self.link = []
         self.space = []
 
-    def NAME(self, after: str | None = None):
+    def name(self, after: str | None = None):
         if after is None:
             return self.__name
         else:

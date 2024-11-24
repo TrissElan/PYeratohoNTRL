@@ -1,4 +1,3 @@
-from csv import reader as read
 from json import load
 from collections import defaultdict
 import MODULE.DisplayModule as DM
@@ -65,6 +64,7 @@ class System:
         # 선택값 저장 변수 준비
         self.__result = tk.IntVar()
         self.__result.set(0)
+        self.__input_processed = False  # 입력 처리 여부를 추적하는 플래그
     
     @property
     def timeInfo(self):
@@ -129,11 +129,20 @@ class System:
         space = size - width
         return text + ' ' * space
     
+    def __handle_click(self, value):
+        """입력값을 한 번만 처리하는 핸들러"""
+        if not self.__input_processed:
+            self.__input_processed = True
+            self.__result.set(value)
+    
     # 클릭 가능한 텍스트를 출력하여 입력을 받는 함수
     def input(self, commands:dict, width, col = 4, align = "center")->None:
+        # 입력 처리 플래그 초기화
+        self.__input_processed = False
+        
         # 커맨드 정리
         self.delText(5)
-
+        
         # 커맨드 출력(태그 부여 전)
         comtext = {key:f"[{key:03d}] - {value[0]}" for key, value in commands.items()}
         current_text = ""
@@ -145,8 +154,7 @@ class System:
             current_text += "\n"
         
         self.setText(current_text, align, 5)
-            
-        
+
         # 출력된 커맨드에 대한 태그 부여 시작
         current_text = self.DISPLAY.textArea[5].get("1.0", "end-1c")
         lines = current_text.split("\n")
@@ -159,7 +167,7 @@ class System:
                     self.DISPLAY.textArea[5].tag_add(tagName, start, end)
                     self.DISPLAY.textArea[5].tag_bind(tagName, "<Enter>", lambda e, tag=tagName: on_enter(e, tag))
                     self.DISPLAY.textArea[5].tag_bind(tagName, "<Leave>", lambda e, tag=tagName: on_leave(e, tag))
-                    self.DISPLAY.textArea[5].tag_bind(tagName, "<Button-1>", lambda e, value = key : self.__result.set(value))
+                    self.DISPLAY.textArea[5].tag_bind(tagName, "<Button-1>", lambda e, value=key: self.__handle_click(value))
         self.DISPLAY.root.wait_variable(self.__result)
 
     # 임의선택함수
@@ -201,28 +209,11 @@ class System:
             print(f"Error while closing: {e}")
     
     # 임의난수 생성함수
-    def RANDOM(self, count):
+    def random(self, count):
         return rd.randrange(0, count)
     
     # 리스트에서 임의의 하나를 뽑아냄
-    def CHOICE(Self, lst:list):
+    def choice(Self, lst:list):
         return rd.choice(lst)
-    
-    # 커맨드 준비함수
-    def prepareCommand(self):
-        import inspect
-        from COMMAND import Category100
-        with open("./DATA/TRAIN.csv", "r", encoding="utf-8") as csvFile:    
-            result = read(csvFile)
-            commands = {int(name[3:]):func for name, func in inspect.getmembers(Category100) if inspect.isfunction(func)}
-            for row in result:
-                if row == [] or row[0] == "" or row[0].startswith(";"):
-                    continue
-                else:
-                    cnum = int(row[0])
-                    if cnum in commands:
-                        self.COMMAND[int(cnum)] = (row[1], commands[cnum])
-                    else:
-                        self.COMMAND[int(cnum)] = None
 
 SYSTEM = System()
