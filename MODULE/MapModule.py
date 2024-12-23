@@ -39,15 +39,15 @@ class Node:
         return chara in self.space
 
     def __str__(self):
-        return f"{self.NAME} ({self.smell}, {self.stain})"
+        return f"{self.name()} ({self.smell}, {self.stain})"
 
     def __mod__(self, msg: str = None):
         if msg[0] == "로":
-            return self.NAME(msg[0]) + msg[1:]
+            return self.name(msg[0]) + msg[1:]
         elif msg[:2] == "으로":
-            return self.NAME(msg[:2]) + msg[2:]
+            return self.name(msg[:2]) + msg[2:]
         else:
-            return self.NAME() + msg
+            return self.name() + msg
 
 
 def generateMap():

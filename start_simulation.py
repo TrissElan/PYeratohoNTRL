@@ -113,13 +113,13 @@ class Simulation:
         else:
             self.current_player.target = other
             if self.master in other.currL.space:
-                msg = self.current_player.name() % "는 "
+                msg = self.current_player % "는 "
                 if other.target is None:
-                    msg += other.name() % "에게 가까이 다가간다...\n"
+                    msg += other % "에게 가까이 다가간다...\n"
                 elif other.target == self.current_player:
-                    msg += " 자신을 바라보고 있는 " + other.name() % "에게 시선을 돌렸다.\n"
+                    msg += " 자신을 바라보고 있는 " + other % "에게 시선을 돌렸다.\n"
                 else:
-                    msg += other.name() % "과" + other.target.name() % "의 사이에 끼어들었다!\n"
+                    msg += other % "과" + other.target % "의 사이에 끼어들었다!\n"
                 SYSTEM.setText(msg)
 
     def check_target(self):
@@ -158,20 +158,15 @@ class Simulation:
 
     def phase2(self):
         if self.current_player == self.master:
-            SYSTEM.input(SYSTEM.COM, 20, 5, "left")
+            SYSTEM.input({0:("이동하기", None)}, 20, 5, "left")
         else:
-            SYSTEM.inputr(SYSTEM.COM)
+            SYSTEM.inputr({0:("이동하기", None)})
 
         SYSTEM.after(self.phase3)
 
     def phase3(self):
-        CHARA = SYSTEM.CHARACTERS[self.current]
-
-        if SYSTEM.COM[SYSTEM.result] is None and SYSTEM.result != 0:
-            SYSTEM.setText(4, "명령어가 구현되어 있지 않습니다.\n")
-        else:
-            SYSTEM.COM[SYSTEM.result][1](CHARA)
-
+        if SYSTEM.result == 0:
+            self.current_player.COM100()
         SYSTEM.after(self.phase4)
         SYSTEM.after(SYSTEM.see_end)
 

@@ -13,8 +13,8 @@ class StartMenu:
         }
 
     def start(self):
-        SYSTEM.mainloop()
         SYSTEM.after(self.phase0)
+        SYSTEM.mainloop()
         
     def phase0(self):
         SYSTEM.clearImgArea()
@@ -28,6 +28,7 @@ class StartMenu:
         SYSTEM.after(self.phase2)
 
     def phase2(self):
+        print(3)
         SYSTEM.input(self.__commands, 8, 1)
         SYSTEM.after(self.phase3)
 
