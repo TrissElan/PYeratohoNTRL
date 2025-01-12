@@ -8,10 +8,10 @@ from MODULE.SystemModule import SYSTEM
 class PrepareEnvironments:
     def __init__(self):
         self.__commands = {
-            1: ("성벽 설정 완료", None),
-            2: ("캐릭터 수정", None),
-            3: ("복장 수정", None),
-            4: ("후타나리화 적용", None),
+            1: "성벽 설정 완료",
+            2: "캐릭터 수정",
+            3: "복장 수정",
+            4: "후타나리화 적용",
         }
         
     def start(self):
@@ -40,7 +40,7 @@ class PrepareEnvironments:
         
 
     def phase2(self):
-        SYSTEM.input(self.__commands, 10, 1, "left")
+        SYSTEM.input(self.__commands, width=10, col=1, align="left")
         SYSTEM.after(self.phase3)
 
     def phase3(self):

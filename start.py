@@ -8,8 +8,8 @@ import start_from_zero
 class StartMenu:
     def __init__(self):
         self.__commands = {
-            1: (SYSTEM.setting2["start"], None),
-            2: (SYSTEM.setting2["load"], None),
+            1: SYSTEM.setting2["start"],
+            2: SYSTEM.setting2["load"],
         }
 
     def start(self):
@@ -28,8 +28,7 @@ class StartMenu:
         SYSTEM.after(self.phase2)
 
     def phase2(self):
-        print(3)
-        SYSTEM.input(self.__commands, 8, 1)
+        SYSTEM.input(self.__commands, width=8, col=1)
         SYSTEM.after(self.phase3)
 
     def phase3(self):

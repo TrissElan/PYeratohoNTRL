@@ -40,7 +40,7 @@ class CharacterBase:
             ),
         )
 
-        # 관계를 기록하는 변수
+        # 관계를 기록하는 변수 : 딕셔너리의 키로 캐릭터의 이름(문자열)을 사용함
         self.attr: defaultdict[str, InvertedVariable] = defaultdict(
             lambda: InvertedVariable(["호의", "적의"])
         )
@@ -51,7 +51,7 @@ class CharacterBase:
             lambda: InvertedVariable(["S성향", "M성향"])
         )
 
-        # 감정을 기록하는 변수
+        # 감정을 기록하는 변수 : 딕셔너리의 키로 캐릭터의 이름(문자열)을 사용함
         self.mood: defaultdict[str, Tuple[InvertedVariable, InvertedVariable, InvertedVariable, InvertedVariable, InvertedVariable, InvertedVariable, InvertedVariable]] = defaultdict(
             lambda: (
                 InvertedVariable(["기쁨", "슬픔"]),
@@ -74,14 +74,8 @@ class CharacterBase:
             TagedVariable("W쾌감", isValid=self.talent["성별"].current != -1),
         )
 
-        # 부가된 명령을 수행하는데 걸리는 소요시간을 기록하는 변수
-        self.remainTime: int = 0
-
-        # 현재 선택된 행동이 무엇인지 확인하는 변수
-        self._currentAction: Optional[Any] = None
-
         # 캐릭터가 선택한 대상을 기록하는 변수
-        self.target: Optional[Any] = None
+        self.target: Optional[CharacterBase] = None
 
         # 위치 관리를 위한 변수
         self.currL: Optional[Node] = None  # CFLAG[11] - 현재위치
@@ -93,7 +87,7 @@ class CharacterBase:
         for key, value in data["FLAG"].items():
             self.cflag[int(key)] = value
 
-        # 경험을 기록하는 변수
+        # 경험을 기록하는 변수 : 각각 자각 / 무자각 / NTR로 구분
         self.exp1: defaultdict[str, Tuple[TagedVariable, TagedVariable, TagedVariable, TagedVariable, TagedVariable, TagedVariable]] = defaultdict(
             lambda: (
                 TagedVariable(

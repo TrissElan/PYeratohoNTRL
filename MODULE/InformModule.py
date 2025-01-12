@@ -152,9 +152,8 @@ def showParam(CHARA, area):
     
     result = result.replace("None", "----")
 
-    SYSTEM.setText(area, result)
+    SYSTEM.setText(result, index = area)
 
 def showExp(area, chara):
     global SYSTEM
     # 내용물 재구성해야 함
-    # SYSTEM.setText(area, result)

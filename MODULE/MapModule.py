@@ -259,7 +259,7 @@ def showMap(currentLocation: int):
 ■□□□■□□□□■
 ■■■■■■■■■■"""
 
-    SYSTEM.setText(3, mapData)
+    SYSTEM.setText(mapData, index = 3)
 
     lines = mapData.split("\n")
     SYSTEM.DISPLAY.textArea[3].tag_config("gray", foreground="gray")

@@ -136,44 +136,55 @@ class System:
             self.__result.set(value)
     
     # 클릭 가능한 텍스트를 출력하여 입력을 받는 함수
-    def input(self, commands:dict, width, col = 4, align = "center")->None:
-        # 입력 처리 플래그 초기화
-        self.__input_processed = False
+    def __format_command_text(self, commands: dict[int, str], width: int = 20, col: int = 4) -> str:
+        """커맨드 텍스트를 포맷팅하는 내부 메서드"""
+        formatted = {key: f"[{key:03d}] - {text}" for key, text in commands.items()}
+        result = ""
+        for i, text in enumerate(formatted.values()):
+            result += self.fstr(text, width)
+            if i % col == col - 1:
+                result += "\n"
+        if not result.endswith("\n"):
+            result += "\n"
+        return result
+
+    def __add_command_tags(self, commands: dict[int, str]) -> None:
+        """커맨드 텍스트에 태그를 추가하는 내부 메서드"""
+        text_widget = self.DISPLAY.textArea[5]
+        current_text = text_widget.get("1.0", "end-1c")
+        lines = current_text.split("\n")
         
-        # 커맨드 정리
+        for key, text in commands.items():
+            formatted_text = f"[{key:03d}] - {text}"
+            for line_num, line in enumerate(lines):
+                if formatted_text in line:
+                    start = f"{line_num + 1}.{line.find(formatted_text)}"
+                    end = f"{line_num + 1}.{line.find(formatted_text) + len(formatted_text)}"
+                    tag_name = f"COM{key:03d}"
+                    
+                    text_widget.tag_add(tag_name, start, end)
+                    text_widget.tag_bind(tag_name, "<Enter>", lambda e, tag=tag_name: on_enter(e, tag))
+                    text_widget.tag_bind(tag_name, "<Leave>", lambda e, tag=tag_name: on_leave(e, tag))
+                    text_widget.tag_bind(tag_name, "<Button-1>", lambda e, value=key: self.__handle_click(value))
+
+    def input(self, commands: dict[int, str], width: int = 20, col: int = 4, align: str = "center") -> None:
+        """클릭 가능한 커맨드 메뉴를 표시하고 사용자 입력을 기다림"""
+        self.__input_processed = False
         self.delText(5)
         
-        # 커맨드 출력(태그 부여 전)
-        comtext = {key:f"[{key:03d}] - {value[0]}" for key, value in commands.items()}
-        current_text = ""
-        for i, text in enumerate(comtext.values()):
-            current_text += self.fstr(text, width)
-            if i % col == col - 1:
-                current_text += "\n"
-        if current_text[-1] != "\n":
-            current_text += "\n"
+        # 커맨드 텍스트 포맷팅 및 출력
+        formatted_text = self.__format_command_text(commands, width, col)
+        self.setText(formatted_text, align, 5)
         
-        self.setText(current_text, align, 5)
-
-        # 출력된 커맨드에 대한 태그 부여 시작
-        current_text = self.DISPLAY.textArea[5].get("1.0", "end-1c")
-        lines = current_text.split("\n")
-        for key, text in comtext.items():
-            for line_num, line in enumerate(lines):
-                if text in line:
-                    start = f"{line_num + 1}.{line.find(text)}"
-                    end = f"{line_num + 1}.{line.find(text) + len(text)}"
-                    tagName = f"COM{key:03d}"
-                    self.DISPLAY.textArea[5].tag_add(tagName, start, end)
-                    self.DISPLAY.textArea[5].tag_bind(tagName, "<Enter>", lambda e, tag=tagName: on_enter(e, tag))
-                    self.DISPLAY.textArea[5].tag_bind(tagName, "<Leave>", lambda e, tag=tagName: on_leave(e, tag))
-                    self.DISPLAY.textArea[5].tag_bind(tagName, "<Button-1>", lambda e, value=key: self.__handle_click(value))
+        # 태그 추가
+        self.__add_command_tags(commands)
+        
+        # 입력 대기
         self.DISPLAY.root.wait_variable(self.__result)
 
-    # 임의선택함수
-    def inputr(self, commands:dict)->int:
-        key = rd.choice(list(commands.keys()))
-        self.__result.set(key)
+    def inputr(self, commands: dict[int, str]) -> None:
+        """임의의 커맨드를 선택"""
+        self.__result.set(rd.choice(list(commands.keys())))
 
     # 이벤트루트를 시작하는 메서드
     def mainloop(self):

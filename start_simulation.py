@@ -112,6 +112,7 @@ class Simulation:
             pass
         else:
             self.current_player.target = other
+            other.short_info(2)
             if self.master in other.currL.space:
                 msg = self.current_player % "는 "
                 if other.target is None:
@@ -128,11 +129,16 @@ class Simulation:
                 self.current_player.target = None
 
     def start(self):
+        SYSTEM.clearTextArea()
         SYSTEM.after(self.phase0)
 
     def phase0(self):
         SYSTEM.clearImgArea()
-        SYSTEM.clearTextArea()
+        SYSTEM.delText(0)
+        SYSTEM.delText(1)
+        SYSTEM.delText(2)
+        SYSTEM.delText(3)
+        SYSTEM.delText(5)
         SYSTEM.after(self.phase1)
 
     def phase1(self):
@@ -158,15 +164,20 @@ class Simulation:
 
     def phase2(self):
         if self.current_player == self.master:
-            SYSTEM.input({0:("이동하기", None)}, 20, 5, "left")
+            SYSTEM.input({0: "이동하기", 1:"대화하기",2:"대기"}, width=20, col=5, align="left")
         else:
-            SYSTEM.inputr({0:("이동하기", None)})
+            SYSTEM.inputr({0: "이동하기", 1:"대화하기",2:"대기"})
 
         SYSTEM.after(self.phase3)
 
     def phase3(self):
+        print(self.current_player.name(), SYSTEM.result)
         if SYSTEM.result == 0:
             self.current_player.COM100()
+        elif SYSTEM.result == 1:
+            self.current_player.COM101()
+        elif SYSTEM.result == 2:
+            SYSTEM.result = 1000
         SYSTEM.after(self.phase4)
         SYSTEM.after(SYSTEM.see_end)
 

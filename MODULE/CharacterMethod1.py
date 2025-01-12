@@ -6,7 +6,7 @@ from MODULE.SystemModule import SYSTEM
 # - 이 클래스에서 각종 정보확인 메서드 등을 정의함
 class CharacterType1(CharacterType0):
     def short_info(self, area: int) -> None:
-        player_name: str = SYSTEM.CHARACTERS[SYSTEM.MASTER].name(select="이름")
+        player_name: str = self.name(select="이름")
         target_name: Optional[str] = None if self.target is None else self.target.name(select="이름")
 
         # 이미지 영역에 출력할 정보
@@ -19,13 +19,13 @@ class CharacterType1(CharacterType0):
         tmp_str: str = "\n".join(tmp)
         SYSTEM.addTextAfterImg(area, tmp_str)
 
-        base_info: str = f"□ {self.name(select="이름")}"
+        base_info: str = f"□ {player_name}"
         # 1) 캐릭터가 선택한 대상과의 관계수치
         if target_name is not None:
-            base_info += f"(호감 : {self.attr[player_name].data.current} | 신뢰 : {self.trst[player_name].data.current} | 관계 : {self.subm[player_name].data.current})\n"
+            base_info += f"({target_name}에 대해 호감 : {self.attr[target_name].data.current} | 신뢰 : {self.trst[target_name].data.current} | 관계 : {self.subm[target_name].data.current})"
 
         # 2) 캐릭터의 욕구
-        base_info += "□ 생리적 욕구\n"
+        base_info += "\n□ 생리적 욕구\n"
         tmp = []
         for i in range(3, 6):
             if self.base[i].isValid:
@@ -40,11 +40,11 @@ class CharacterType1(CharacterType0):
 
         # 4) 캐릭터가 선택한 대상에 대한 감정 정보
         if target_name is not None:
-            base_info += f"□ {player_name}에 대한 감정\n"
+            base_info += f"□ {target_name}에 대한 감정\n"
             tmp = []
             for i in range(7):
                 tmp.append(
-                    f"{self.mood[player_name][i].name} : {self.mood[player_name][i].data.current}"
+                    f"{self.mood[target_name][i].name} : {self.mood[target_name][i].data.current}"
                 )
             tmp_str = "|".join(tmp)
             base_info += tmp_str + "\n"

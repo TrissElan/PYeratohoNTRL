@@ -4,12 +4,12 @@ from MODULE.SystemModule import SYSTEM
 class ShopPhase:
     def __init__(self):
         self.__commands = {
-            1: ("기상하기", None),
-            2: ("기상시간 설정", None),
-            3: ("도구구매", None),
-            4: ("저장하기", None),
-            5: ("불러오기", None),
-            6: ("옵션설정", None),
+            1: "기상하기",
+            2: "기상시간 설정",
+            3: "도구구매",
+            4: "저장하기",
+            5: "불러오기",
+            6: "옵션설정",
         }
 
     def setWakeupTime(self):
@@ -39,7 +39,7 @@ class ShopPhase:
         SYSTEM.after(self.phase2)
     
     def phase2(self):
-        SYSTEM.input(self.__commands, 10, 1, "left")
+        SYSTEM.input(self.__commands, width=10, col=1, align="left")
         SYSTEM.after(self.phase3)
 
     def phase3(self):
@@ -61,4 +61,3 @@ class ShopPhase:
 def main():
     shop = ShopPhase()
     shop.start()
-

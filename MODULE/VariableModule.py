@@ -142,20 +142,16 @@ class InvertedVariable:
     def __init__(self, name: list[str], value=0):
         self.__name = tuple(name)
         self.isValid = True
-        self.__data = IntegerVariable(value)
+        self.data = IntegerVariable(value)
 
     @property
     def name(self):
-        if self.__data.current > 0:
+        if self.data.current > 0:
             return SYSTEM.fstr(self.__name[0], 2)
-        elif self.__data.current < 0:
+        elif self.data.current < 0:
             return SYSTEM.fstr(self.__name[1], 2)
         else:
             return SYSTEM.fstr("--", 2)
-
-    @property
-    def data(self):
-        return self.__data
 
 
 class TagedVariable:
@@ -163,14 +159,10 @@ class TagedVariable:
         self.__name = name
         self.isValid = isValid
         if self.isValid:
-            self.__data = IntegerVariable(value, minValue, maxValue)
+            self.data = IntegerVariable(value, minValue, maxValue)
         else:
-            self.__data = IntegerVariable(None)
+            self.data = IntegerVariable(None)
 
     @property
     def name(self):
         return SYSTEM.fstr(self.__name, 3)
-
-    @property
-    def data(self):
-        return self.__data
